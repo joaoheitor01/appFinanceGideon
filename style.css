@@ -81,32 +81,6 @@ header {
     gap: 2rem;
 }
 
-.monthly-summary {
-    margin-top: 2rem;
-    background: var(--bg-surface);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    overflow: hidden;
-}
-
-.monthly-summary h2 {
-    padding: 1rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.monthly-summary .positive {
-    color: var(--accent-green);
-    font-weight: 500;
-}
-
-.monthly-summary .negative {
-    color: var(--accent-red);
-    font-weight: 500;
-}
-
-
 .data-panel {
     flex: 1;
     background: var(--bg-surface);
