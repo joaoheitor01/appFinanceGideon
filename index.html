@@ -3,38 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle Financeiro MVP</title>
+    <title>Finanças Pessoais</title>
     <link rel="stylesheet" href="style.css">
-    </head>
+</head>
 <body>
 
     <header>
-        <h1>Minhas Finanças</h1>
-        <div class="header-actions">
-            <button id="btn-settings" class="btn-text">⚙️ Dados</button>
+        <div class="logo">Finanças</div>
+        
+        <div class="month-navigation">
+            <button id="btn-prev-month" class="nav-btn">&lt;</button>
+            <span id="current-month">Janeiro 2025</span>
+            <button id="btn-next-month" class="nav-btn">&gt;</button>
         </div>
+
+        <button id="btn-settings" class="icon-btn" aria-label="Configurações">⚙️</button>
     </header>
 
     <main class="container">
-        <section class="summary">
-            <div class="card income">
-                <h3>Entradas</h3>
-                <p id="display-income">R$ 0,00</p>
+        <section class="summary-grid">
+            <div class="kpi-card">
+                <span class="kpi-label">Receitas</span>
+                <p id="display-income" class="kpi-value positive">R$ 0,00</p>
             </div>
-            <div class="card expense">
-                <h3>Saídas</h3>
-                <p id="display-expense">R$ 0,00</p>
+            <div class="kpi-card">
+                <span class="kpi-label">Despesas</span>
+                <p id="display-expense" class="kpi-value negative">R$ 0,00</p>
             </div>
-            <div class="card total">
-                <h3>Total</h3>
-                <p id="display-total">R$ 0,00</p>
+            <div class="kpi-card">
+                <span class="kpi-label">Saldo</span>
+                <p id="display-total" class="kpi-value neutral">R$ 0,00</p>
             </div>
         </section>
 
-        <section class="transactions">
-            <h2>Histórico</h2>
-            <ul id="transactions-list">
-            </ul>
+        <section class="data-split-view">
+            
+            <div class="data-panel">
+                <div class="panel-header">
+                    <h3>Entradas</h3>
+                    <div class="indicator green"></div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="20%">Data</th>
+                                <th width="50%">Descrição</th>
+                                <th width="30%" class="text-right">Valor</th>
+                                <th width="10%"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="income-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="data-panel">
+                <div class="panel-header">
+                    <h3>Saídas</h3>
+                    <div class="indicator red"></div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="20%">Data</th>
+                                <th width="50%">Descrição</th>
+                                <th width="30%" class="text-right">Valor</th>
+                                <th width="10%"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="expense-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
         </section>
     </main>
 
@@ -43,53 +88,45 @@
     <div id="modal-overlay" class="modal-overlay hidden">
         <div class="modal">
             <div class="modal-header">
-                <h2>Nova Transação</h2>
+                <h2>Nova Movimentação</h2>
                 <span id="modal-close" class="close">&times;</span>
             </div>
             <form id="form-transaction">
                 <div class="input-group">
-                    <label for="description">Descrição</label>
-                    <input type="text" id="description" placeholder="Ex: Mercado" required>
+                    <label>Descrição</label>
+                    <input type="text" id="description" required>
                 </div>
-
                 <div class="input-group">
-                    <label for="amount">Valor</label>
-                    <input type="number" id="amount" step="0.01" placeholder="0,00" required>
+                    <label>Valor</label>
+                    <input type="number" id="amount" step="0.01" required>
                 </div>
-
                 <div class="input-group">
-                    <label for="date">Data</label>
+                    <label>Data</label>
                     <input type="date" id="date" required>
                 </div>
-
-                <div class="input-group">
-                    <label>Tipo</label>
-                    <div class="radio-group">
-                        <label><input type="radio" name="type" value="income" checked> Entrada</label>
-                        <label><input type="radio" name="type" value="expense"> Saída</label>
-                    </div>
+                <div class="input-group radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="type" value="income" checked> Entrada
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="type" value="expense"> Saída
+                    </label>
                 </div>
-
-                <div class="modal-actions">
-                    <button type="submit" class="btn-primary">Salvar</button>
-                </div>
+                <button type="submit" class="btn-submit">Confirmar</button>
             </form>
         </div>
     </div>
 
     <div id="settings-overlay" class="modal-overlay hidden">
-        <div class="modal">
+        <div class="modal compact">
             <div class="modal-header">
-                <h2>Gerenciar Dados</h2>
+                <h2>Dados</h2>
                 <span id="settings-close" class="close">&times;</span>
             </div>
-            <div class="settings-actions">
-                <button id="btn-export" class="btn-secondary">📥 Exportar (JSON)</button>
-                <label for="file-import" class="btn-secondary">📤 Importar (JSON)</label>
-                <input type="file" id="file-import" accept=".json" hidden>
-                <hr>
-                <button id="btn-clear" class="btn-danger">🗑️ Apagar Tudo</button>
-            </div>
+            <button id="btn-export" class="btn-secondary">Baixar Backup</button>
+            <label for="file-import" class="btn-secondary">Restaurar Backup</label>
+            <input type="file" id="file-import" accept=".json" hidden>
+            <button id="btn-clear" class="btn-danger">Apagar Tudo</button>
         </div>
     </div>
 
