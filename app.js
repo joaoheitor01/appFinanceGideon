@@ -27,6 +27,33 @@ const Transaction = {
         this.all.splice(index, 1);
         Storage.set(this.all);
         console.log(`Gideon: Transação removida do índice ${index}.`);
+    },
+
+    getMonthlySummary(year) {
+        const monthlySummary = Array.from({ length: 12 }, (_, i) => ({
+            month: i,
+            income: 0,
+            expense: 0,
+            balance: 0
+        }));
+
+        this.all.forEach(transaction => {
+            const transactionDate = new Date(transaction.date);
+            if (transactionDate.getFullYear() === year) {
+                const month = transactionDate.getMonth();
+                if (transaction.type === 'income') {
+                    monthlySummary[month].income += transaction.amount;
+                } else {
+                    monthlySummary[month].expense += transaction.amount;
+                }
+            }
+        });
+
+        monthlySummary.forEach(monthData => {
+            monthData.balance = monthData.income - monthData.expense;
+        });
+
+        return monthlySummary;
     }
 };
 
@@ -42,11 +69,20 @@ const Utils = {
     formatDate(date) {
         const splittedDate = date.split("-");
         return `${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`;
+    },
+
+    getMonthName(monthIndex) {
+        const months = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ];
+        return months[monthIndex];
     }
 };
 
 const DOM = {
     transactionsContainer: document.querySelector('#transactions-list'),
+    monthlySummaryContainer: document.querySelector('#monthly-summary-body'),
 
     addTransaction(transaction, index) {
         const li = document.createElement('li');
@@ -102,6 +138,20 @@ const DOM = {
             li.innerText = 'Nenhuma transação registrada.';
             DOM.transactionsContainer.appendChild(li);
         }
+    },
+
+    renderMonthlySummary(summary) {
+        DOM.monthlySummaryContainer.innerHTML = "";
+        summary.forEach(monthData => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${Utils.getMonthName(monthData.month)}</td>
+                <td class="text-right positive">${Utils.formatAmount(monthData.income)}</td>
+                <td class="text-right negative">${Utils.formatAmount(monthData.expense)}</td>
+                <td class="text-right ${monthData.balance >= 0 ? 'positive' : 'negative'}">${Utils.formatAmount(monthData.balance)}</td>
+            `;
+            DOM.monthlySummaryContainer.appendChild(tr);
+        });
     }
 };
 
@@ -116,6 +166,9 @@ const App = {
             DOM.addTransaction(transaction, index);
         });
         DOM.updateBalance();
+        const currentYear = new Date().getFullYear();
+        const monthlySummary = Transaction.getMonthlySummary(currentYear);
+        DOM.renderMonthlySummary(monthlySummary);
     },
 
     addTransaction(transaction) {
