@@ -13,12 +13,12 @@
 
     <style>
         :root {
-            --bg-app: #09090b;       /* Fundo Preto Profundo */
-            --bg-card: #18181b;      /* Cartão Cinza Escuro */
-            --bg-input: #ffffff;     /* Input Branco */
+            --bg-app: #09090b;
+            --bg-card: #18181b;
+            --bg-input: #ffffff;
             --text-primary: #f4f4f5;
             --text-secondary: #a1a1aa;
-            --accent-green: #10b981; /* Verde Destaque */
+            --accent-green: #10b981;
             --accent-red: #ef4444;
             --primary: #6366f1;
             --radius: 12px;
@@ -27,7 +27,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg-app); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
 
-        /* --- TELA DE LOGIN (DESIGN CLEAN & MODERNO) --- */
+        /* --- TELA DE LOGIN --- */
         #login-screen {
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
@@ -49,20 +49,16 @@
         .login-card h2 { font-size: 1.75rem; margin-bottom: 0.5rem; color: #fff; font-weight: 700; letter-spacing: -0.5px; }
         .login-card p { color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem; }
 
-        /* Inputs Arredondados */
         .input-container { position: relative; margin-bottom: 1rem; }
         .input-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #9ca3af; }
         
         .login-card input {
             width: 100%; height: 3.5rem;
             background: #fff; border: 2px solid transparent;
-            border-radius: 50px; /* Pílula */
-            padding: 0 1rem 0 3rem; font-size: 1rem; color: #1f2937;
-            transition: all 0.2s;
+            border-radius: 50px; padding: 0 1rem 0 3rem; font-size: 1rem; color: #1f2937; transition: all 0.2s;
         }
         .login-card input:focus { border-color: var(--accent-green); outline: none; }
 
-        /* Botão Gradiente */
         .login-card button {
             width: 100%; height: 3.5rem;
             background: linear-gradient(to right, #10b981, #059669);
@@ -76,23 +72,62 @@
         .login-footer a { color: #fff; text-decoration: none; font-weight: 600; }
         #login-msg { margin-top: 1rem; font-size: 0.9rem; min-height: 1.2rem; }
 
-        /* --- APP PRINCIPAL (Escondido no início) --- */
+        /* --- APP PRINCIPAL --- */
         #app-content { display: none; }
         
-        /* Restante do CSS básico para quando logar */
+        /* Layout Geral */
         .container { max-width: 1024px; margin: 0 auto; padding: 0 1.5rem; }
-        header { padding: 2.5rem 0 5rem; text-align: center; }
-        #logo { font-weight: 600; font-size: 1.5rem; letter-spacing: -1px; color: var(--text-primary); }
         
-        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: -3rem; margin-bottom: 2rem; }
-        .card { background: var(--bg-card); border-radius: var(--radius); padding: 1.5rem; border: 1px solid rgba(255,255,255,0.05); }
-        .card h3 { font-size: 1.8rem; font-weight: 600; margin-top: 1rem;}
+        /* HEADER NOVO: Alinhado e Flexível */
+        header { padding: 2rem 0; }
+        .header-content {
+            display: flex;
+            justify-content: space-between; /* Separa Logo (Esq) e User (Dir) */
+            align-items: center;
+        }
+
+        #logo { font-weight: 700; font-size: 1.5rem; letter-spacing: -1px; color: var(--text-primary); }
+        
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .btn-logout {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
+            color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+            font-size: 0.8rem;
+        }
+        .btn-logout:hover { background: rgba(255,255,255,0.1); }
+
+        /* CARDS MENORES */
+        .summary-grid { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; 
+            margin-bottom: 2rem; 
+        }
+        .card { 
+            background: var(--bg-card); border-radius: var(--radius); 
+            padding: 1.2rem; /* Padding reduzido (antes era 1.5rem) */
+            border: 1px solid rgba(255,255,255,0.05); 
+        }
+        .card header { 
+            padding: 0; margin-bottom: 0.5rem; 
+            display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 0.85rem; 
+        }
+        .card h3 { 
+            font-size: 1.5rem; /* Fonte menor (antes era 1.8 ou 2rem) */
+            font-weight: 600; margin-top: 0.2rem; 
+        }
         .text-green { color: var(--accent-green); } .text-red { color: var(--accent-red); }
         
-        .form-row { display: grid; grid-template-columns: 2fr 1fr 1.2fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        /* Formulário e Tabelas */
         .form-section input, .form-section select { 
             width: 100%; height: 3rem; background: #27272a; border: none; border-radius: 8px; color: #fff; padding: 0 1rem; 
         }
+        .form-row { display: grid; grid-template-columns: 2fr 1fr 1.2fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
         .actions-row { display: flex; justify-content: space-between; align-items: center; }
         .btn-submit { background: #fff; color: #000; border: none; padding: 0 2rem; height: 3rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
         
@@ -112,21 +147,17 @@
         <div class="login-card">
             <h2>Gideon Finance</h2>
             <p>Login to continue.</p>
-            
             <form id="login-form">
                 <div class="input-container">
                     <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     <input type="email" id="email" placeholder="Email" required autocomplete="email">
                 </div>
-
                 <div class="input-container">
                     <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
                 </div>
-
                 <button type="submit" id="login-btn">LOGIN</button>
             </form>
-            
             <div class="login-footer">
                 <span>New here? </span><a href="#" onclick="document.getElementById('login-btn').click()">Sign Up</a>
             </div>
@@ -135,22 +166,30 @@
     </section>
 
     <div id="app-content">
+        
         <header>
-            <div id="logo">gideon. <span id="user-email" style="font-size: 0.8rem; opacity: 0.7; font-weight: 400;"></span> <button onclick="Auth.logout()" style="background:none; border:1px solid #666; color:#aaa; padding:2px 8px; border-radius:4px; cursor:pointer; margin-left:10px;">Sair</button></div>
+            <div class="container header-content">
+                <div id="logo">gideon</div>
+                
+                <div class="user-area">
+                    <span id="user-email"></span>
+                    <button onclick="Auth.logout()" class="btn-logout">Sair</button>
+                </div>
+            </div>
         </header>
 
         <main class="container">
             <section class="summary-grid">
                 <div class="card">
-                    <header style="display:flex; justify-content:space-between; color:#a1a1aa; font-size:0.9rem;"><span>Entradas</span></header>
+                    <header><span>Entradas</span></header>
                     <h3 id="incomeDisplay" class="text-green">R$ 0,00</h3>
                 </div>
                 <div class="card">
-                    <header style="display:flex; justify-content:space-between; color:#a1a1aa; font-size:0.9rem;"><span>Saídas</span></header>
+                    <header><span>Saídas</span></header>
                     <h3 id="expenseDisplay" class="text-red">R$ 0,00</h3>
                 </div>
                 <div class="card total">
-                    <header style="display:flex; justify-content:space-between; color:#a1a1aa; font-size:0.9rem;"><span>Saldo Total</span></header>
+                    <header><span>Saldo Total</span></header>
                     <h3 id="display-total">R$ 0,00</h3>
                 </div>
             </section>
