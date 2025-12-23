@@ -113,90 +113,120 @@ tr:hover td { background: rgba(255,255,255,0.02); }
     .radio-btn { flex: 1; text-align: center; }
 }
 /* =========================================
-   TELA DE LOGIN (CENTRALIZADA E CLEAN) - FIX FINAL
+   TELA DE LOGIN (CLEAN & MODERN DESIGN)
    ========================================= */
 
-/* O fundo que cobre a tela inteira */
+/* Fundo escuro que cobre a tela */
 #login-screen {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;   /* Largura total da tela */
-    height: 100vh;  /* Altura total da tela */
-    background-color: var(--bg-app); /* Usa a cor de fundo do app */
-    display: flex;          /* Ativa o Flexbox */
-    align-items: center;    /* Centraliza Verticalmente */
-    justify-content: center;/* Centraliza Horizontalmente */
-    z-index: 9999;          /* Garante que fica na frente de tudo */
-    padding: 20px;          /* Espaço nas laterais em celulares pequenos */
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: #09090b; /* Preto profundo da imagem */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
 }
 
-/* O Cartão do Formulário */
+/* O Cartão Central */
 .login-card {
-    background: var(--bg-card); /* Cor do cartão */
+    background: #18181b; /* Cinza escuro do cartão */
     width: 100%;
-    max-width: 400px; /* Largura máxima elegante */
-    padding: 3rem 2rem;
-    border-radius: 16px; /* Bordas arredondadas */
-    border: 1px solid rgba(255, 255, 255, 0.05); /* Borda sutil */
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Sombra moderna */
+    max-width: 380px; /* Largura compacta */
+    padding: 2.5rem 2rem;
+    border-radius: 24px; /* Bordas bem arredondadas */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* Sombra suave */
     text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-/* Títulos e Textos */
+/* Títulos */
 .login-card h2 {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
     margin-bottom: 0.5rem;
-    color: var(--text-primary);
-    font-weight: 600;
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 .login-card p {
-    color: var(--text-secondary);
+    color: #a1a1aa; /* Cinza claro para subtítulo */
     margin-bottom: 2rem;
     font-size: 0.95rem;
 }
 
-/* Campos de Input */
-.login-card input {
-    background: var(--bg-input);
+/* Inputs Brancos com Ícones */
+.input-container {
+    position: relative;
     margin-bottom: 1rem;
-    height: 3.5rem; /* Mais alto para facilitar o toque */
-    font-size: 1rem;
-    width: 100%; /* Garante que ocupa a largura do cartão */
-    border-radius: 8px;
-    border: 1px solid transparent;
-    color: var(--text-primary);
-    padding: 0 1rem;
-}
-.login-card input:focus {
-    border-color: var(--primary); /* Cor ao clicar */
-    outline: none;
 }
 
-/* Botão de Entrar */
+.input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af; /* Cor do ícone */
+}
+
+.login-card input {
+    width: 100%;
+    height: 3.5rem;
+    background: #ffffff; /* Fundo branco */
+    border: 2px solid transparent;
+    border-radius: 50px; /* Bordas estilo "pílula" */
+    padding: 0 1rem 0 3rem; /* Espaço para o ícone na esquerda */
+    font-size: 1rem;
+    color: #1f2937; /* Texto escuro dentro do input */
+    transition: all 0.2s;
+}
+
+.login-card input::placeholder { color: #9ca3af; }
+
+.login-card input:focus {
+    border-color: var(--accent-green); /* Borda verde ao focar */
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Botão com Gradiente Verde */
 .login-card button {
     width: 100%;
     height: 3.5rem;
-    background: var(--accent-green); /* Verde destaque */
+    background: linear-gradient(to right, #10b981, #059669); /* Gradiente da imagem */
     color: white;
     border: none;
-    border-radius: 8px;
-    font-weight: 600;
+    border-radius: 50px; /* Bordas estilo "pílula" */
+    font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
-    transition: transform 0.2s, filter 0.2s;
+    transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
     margin-top: 0.5rem;
+    letter-spacing: 0.5px;
 }
 
 .login-card button:hover {
     filter: brightness(1.1);
-    transform: translateY(-2px); /* Leve efeito de subida */
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
 }
 
-/* Mensagem de erro/sucesso */
-#login-msg {
+/* Rodapé e Mensagens */
+.login-footer {
     margin-top: 1.5rem;
+    color: #a1a1aa;
+    font-size: 0.9rem;
+}
+.login-footer a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+}
+.login-footer a:hover { text-decoration: underline; }
+
+#login-msg {
+    margin-top: 1rem;
     font-size: 0.9rem;
     min-height: 1.2rem;
 }
