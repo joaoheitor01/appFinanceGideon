@@ -1,48 +1,39 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanças Pessoais</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Gideon Finance</title>
+    <link rel="stylesheet" href="./style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
     <header>
-        <div class="logo">Finanças</div>
-
-        <div class="month-navigation">
-            <button id="btn-prev-month" class="nav-btn">&lt;</button>
-            <span id="current-month">Janeiro 2025</span>
-            <button id="btn-next-month" class="nav-btn">&gt;</button>
-        </div>
-
-        <button id="btn-settings" class="icon-btn" aria-label="Configurações">⚙️</button>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+        <div id="logo">GIDEON FINANCE</div>
     </header>
 
     <main class="container">
         <section class="summary-grid">
             <div class="kpi-card">
-                <span class="kpi-label">Receitas</span>
-                <p id="display-income" class="kpi-value positive">R$ 0,00</p>
+                <span class="kpi-label">Entradas</span>
+                <p id="incomeDisplay" class="kpi-value text-green">R$ 0,00</p>
             </div>
             <div class="kpi-card">
-                <span class="kpi-label">Despesas</span>
-                <p id="display-expense" class="kpi-value negative">R$ 0,00</p>
+                <span class="kpi-label">Saídas</span>
+                <p id="expenseDisplay" class="kpi-value text-red">R$ 0,00</p>
             </div>
-            <div class="kpi-card">
-                <span class="kpi-label">Saldo</span>
-                <p id="display-total" class="kpi-value neutral">R$ 0,00</p>
+            <div class="kpi-card total">
+                <span class="kpi-label">Saldo Total</span>
+                <p id="display-total" class="kpi-value">R$ 0,00</p>
             </div>
         </section>
 
-        <section id="monthly-summary-section" class="monthly-summary">
-            <h2>Resumo Mensal do Ano</h2>
+        <section id="monthly-summary-section" style="margin-top: 3rem;">
+            <h2>Resumo Anual</h2>
             <div class="table-container">
                 <table>
                     <thead>
@@ -54,121 +45,72 @@
                         </tr>
                     </thead>
                     <tbody id="monthly-summary-body">
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </section>
 
-        <section class="data-split-view">
-
-            <div class="data-panel">
-                <div class="panel-header">
-                    <h3>Entradas</h3>
-                    <div class="indicator green"></div>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th width="20%">Data</th>
-                                <th width="50%">Descrição</th>
-                                <th width="30%" class="text-right">Valor</th>
-                                <th width="10%"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="income-table-body">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="data-panel">
-                <div class="panel-header">
-                    <h3>Saídas</h3>
-                    <div class="indicator red"></div>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th width="20%">Data</th>
-                                <th width="50%">Descrição</th>
-                                <th width="30%" class="text-right">Valor</th>
-                                <th width="10%"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="expense-table-body">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </section>
         <section id="transaction-details" style="margin-top: 3rem; display: none;">
-    <h2 id="month-title">Detalhes</h2>
-    
-    <div class="table-container">
-        <table id="data-table">
-            <thead>
-                <tr>
-                    <th>Descrição</th>
-                    <th>Valor</th>
-                    <th>Data</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
-    </div>
-</section>
+            <h2 id="month-title">Detalhes</h2>
+            <div class="table-container">
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Data</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
-    <button id="btn-add-transaction" class="fab">+</button>
-<a href="#" onclick="Modal.open()" class="button float">+</a>
-    <div class="modal-overlay" id="modal-overlay">
-    <div class="modal">
-        <div id="form">
-            <h2>Nova Transação</h2>
-            <form id="form-transaction">
-                <div class="input-group">
-                    <label class="sr-only" for="description">Descrição</label>
-                    <input type="text" id="description" name="description" placeholder="Descrição (ex: Aluguel)" required />
-                </div>
+    <div class="modal-overlay">
+        <div class="modal">
+            <div id="form">
+                <h2>Nova Transação</h2>
+                <form id="form-transaction">
+                    <div class="input-group">
+                        <label class="sr-only" for="description">Descrição</label>
+                        <input type="text" id="description" name="description" placeholder="Descrição (ex: Aluguel)" required />
+                    </div>
 
-                <div class="input-group">
-                    <label class="sr-only" for="amount">Valor</label>
-                    <input type="number" step="0.01" id="amount" name="amount" placeholder="0,00" required />
-                    <small class="help">Use o sinal - (negativo) para despesas e , (vírgula) para casas decimais</small>
-                </div>
+                    <div class="input-group">
+                        <label class="sr-only" for="amount">Valor</label>
+                        <input type="number" step="0.01" id="amount" name="amount" placeholder="0,00" required />
+                    </div>
 
-                <div class="input-group">
-                    <label class="sr-only" for="date">Data</label>
-                    <input type="date" id="date" name="date" required />
-                </div>
+                    <div class="input-group radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="type" value="income" checked>
+                            <span class="custom-radio income">Entrada</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="type" value="expense">
+                            <span class="custom-radio expense">Saída</span>
+                        </label>
+                    </div>
 
-                <div class="input-group actions">
-<a href="#" onclick="Modal.close()" class="button cancel">Cancelar</a>
-                    <button type="submit">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-    <div id="settings-overlay" class="modal-overlay hidden">
-        <div class="modal compact">
-            <div class="modal-header">
-                <h2>Dados</h2>
-                <span id="settings-close" class="close">&times;</span>
+                    <div class="input-group">
+                        <label class="sr-only" for="date">Data</label>
+                        <input type="date" id="date" name="date" required />
+                    </div>
+
+                    <div class="input-group actions">
+                        <a href="#" onclick="Modal.close(event)" class="button cancel">Cancelar</a>
+                        <button type="submit">Salvar</button>
+                    </div>
+                </form>
             </div>
-            <button id="btn-export" class="btn-secondary">Baixar Backup</button>
-            <label for="file-import" class="btn-secondary">Restaurar Backup</label>
-            <input type="file" id="file-import" accept=".json" hidden>
-            <button id="btn-clear" class="btn-danger">Apagar Tudo</button>
         </div>
     </div>
 
-    <script src="app.js"></script>
-</body>
+    <a href="#" onclick="Modal.open()" class="button float">+</a>
 
+    <script src="./app.js"></script>
+</body>
 </html>
