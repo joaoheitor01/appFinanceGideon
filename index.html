@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finanças Pessoais</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <header>
         <div class="logo">Finanças</div>
-        
+
         <div class="month-navigation">
             <button id="btn-prev-month" class="nav-btn">&lt;</button>
             <span id="current-month">Janeiro 2025</span>
@@ -36,8 +38,26 @@
             </div>
         </section>
 
+        <section id="monthly-summary-section" class="monthly-summary">
+            <h2>Resumo Mensal do Ano</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mês</th>
+                            <th class="text-right">Entradas</th>
+                            <th class="text-right">Saídas</th>
+                            <th class="text-right">Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthly-summary-body">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <section class="data-split-view">
-            
+
             <div class="data-panel">
                 <div class="panel-header">
                     <h3>Entradas</h3>
@@ -54,7 +74,7 @@
                             </tr>
                         </thead>
                         <tbody id="income-table-body">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -75,7 +95,7 @@
                             </tr>
                         </thead>
                         <tbody id="expense-table-body">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -132,4 +152,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
