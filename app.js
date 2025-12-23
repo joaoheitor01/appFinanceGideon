@@ -1,17 +1,48 @@
+// --- STORAGE ---
 const Storage = {
-    get() { return JSON.parse(localStorage.getItem("gideon.finances:v4")) || []; }, // Mudei para v4 para limpar dados velhos incompatíveis
-    set(transactions) { localStorage.setItem("gideon.finances:v4", JSON.stringify(transactions)); }
+    getTransactions() { return JSON.parse(localStorage.getItem("gideon.finances:v5")) || []; },
+    setTransactions(data) { localStorage.setItem("gideon.finances:v5", JSON.stringify(data)); },
+    
+    getCategories() { 
+        return JSON.parse(localStorage.getItem("gideon.categories")) || ["Alimentação", "Moradia", "Transporte", "Salário", "Lazer", "Saúde", "Outros"];
+    },
+    setCategories(data) { localStorage.setItem("gideon.categories", JSON.stringify(data)); }
 }
 
-// Dados de exemplo com Categoria
-const initialData = [
-    { description: "Salário", amount: 2000, date: "2025-10-30", category: "Salário" },
-    { description: "Mercado", amount: -450, date: "2025-10-30", category: "Alimentação" }
-];
+let transactions = Storage.getTransactions();
 
-let transactions = Storage.get();
-if (transactions.length === 0) { transactions = initialData; Storage.set(transactions); }
+// --- CATEGORIAS ---
+const Category = {
+    list: Storage.getCategories(),
 
+    load() {
+        const select = document.getElementById('category');
+        select.innerHTML = '<option value="" disabled selected>Categoria</option>';
+        
+        Category.list.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.innerHTML = cat;
+            select.appendChild(option);
+        });
+    },
+
+    create() {
+        const newCat = prompt("Digite o nome da nova categoria:");
+        if (newCat && newCat.trim() !== "") {
+            // Adiciona na lista
+            Category.list.push(newCat.trim());
+            // Salva
+            Storage.setCategories(Category.list);
+            // Recarrega o select
+            Category.load();
+            // Seleciona a nova categoria automaticamente
+            document.getElementById('category').value = newCat.trim();
+        }
+    }
+}
+
+// --- UTILITÁRIOS ---
 const Utils = {
     formatCurrency(value) {
         const signal = Number(value) < 0 ? "-" : "";
@@ -31,12 +62,17 @@ const Utils = {
     }
 }
 
+// --- APP ---
 const App = {
     init() {
+        Category.load(); // Carrega as categorias
         App.updateSummaryTable();
         App.updateCards();
     },
-    reload() { App.init(); },
+    reload() { 
+        App.updateSummaryTable();
+        App.updateCards();
+    },
 
     updateSummaryTable() {
         const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -57,14 +93,15 @@ const App = {
             const tr = document.createElement('tr');
             tr.onclick = () => App.showMonthDetails(index, m.name);
             tr.style.cursor = "pointer";
+            
+            const rowOpacity = (m.income === 0 && m.expense === 0) ? "0.3" : "1";
             const balanceClass = m.balance >= 0 ? 'text-green' : 'text-red';
-            const rowOpacity = (m.income === 0 && m.expense === 0) ? "0.5" : "1";
 
             tr.innerHTML = `
                 <td style="opacity: ${rowOpacity}">${m.name}</td>
                 <td class="text-right text-green" style="opacity: ${rowOpacity}">${Utils.formatCurrency(m.income)}</td>
                 <td class="text-right text-red" style="opacity: ${rowOpacity}">${Utils.formatCurrency(m.expense)}</td>
-                <td class="text-right ${balanceClass}" style="opacity: ${rowOpacity}; font-weight: bold;">
+                <td class="text-right ${balanceClass}" style="opacity: ${rowOpacity}; font-weight: 600;">
                     ${Utils.formatCurrency(m.balance)}
                 </td>
             `;
@@ -73,17 +110,18 @@ const App = {
     },
 
     updateCards() {
-        let income = 0;
-        let expense = 0;
+        let income = 0, expense = 0;
         transactions.forEach(t => {
             if(t.amount > 0) income += t.amount;
             else expense += t.amount;
         });
+        document.getElementById('incomeDisplay').innerText = Utils.formatCurrency(income);
+        document.getElementById('expenseDisplay').innerText = Utils.formatCurrency(expense);
+        
         const total = income + expense;
-        document.getElementById('incomeDisplay').innerHTML = Utils.formatCurrency(income);
-        document.getElementById('expenseDisplay').innerHTML = Utils.formatCurrency(expense);
-        document.getElementById('display-total').innerHTML = Utils.formatCurrency(total);
-        document.getElementById('display-total').style.color = total >= 0 ? "#2ecc71" : "#e74c3c";
+        const totalDisplay = document.getElementById('display-total');
+        totalDisplay.innerText = Utils.formatCurrency(total);
+        totalDisplay.style.color = total >= 0 ? "var(--text-primary)" : "var(--accent-red)";
     },
 
     showMonthDetails(monthIndex, monthName) {
@@ -93,50 +131,52 @@ const App = {
 
         const filtered = transactions.filter(t => Utils.getMonthFromDate(t.date) === monthIndex);
         
-        detailsSection.style.display = "block";
+        detailsSection.classList.remove('hidden');
         detailsTitle.innerText = `Extrato de ${monthName}`;
         detailsBody.innerHTML = "";
 
         if(filtered.length === 0) {
-            detailsBody.innerHTML = `<tr><td colspan="5" style="text-align:center">Sem movimentos.</td></tr>`;
+            detailsBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-secondary)">Sem transações neste mês.</td></tr>`;
         } else {
             filtered.forEach(t => {
                 const originalIndex = transactions.indexOf(t);
                 const tr = document.createElement('tr');
-                const cssClass = t.amount > 0 ? "text-green" : "text-red";
-                // Exibe a categoria ou "Geral" se não tiver
-                const category = t.category ? t.category : "Geral";
-
+                const amountClass = t.amount > 0 ? "text-green" : "text-red";
+                
                 tr.innerHTML = `
                     <td>${t.description}</td>
-                    <td style="color: #bbb; font-size: 0.9rem;">${category}</td> <td class="${cssClass}">${Utils.formatCurrency(t.amount)}</td>
-                    <td>${Utils.formatDate(t.date)}</td>
-                    <td style="text-align: center;">
-                         <span style="cursor:pointer; font-size: 1.2rem; color: #f75a68;" onclick="Transaction.remove(${originalIndex})">✕</span>
+                    <td><span style="background: var(--bg-input); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem">${t.category || 'Geral'}</span></td>
+                    <td class="${amountClass}">${Utils.formatCurrency(t.amount)}</td>
+                    <td style="color: var(--text-secondary); font-size: 0.85rem">${Utils.formatDate(t.date)}</td>
+                    <td style="text-align: right;">
+                         <span style="cursor:pointer; color: var(--text-secondary); font-size: 1rem;" onclick="Transaction.remove(${originalIndex})" title="Excluir">✕</span>
                     </td>
                 `;
                 detailsBody.appendChild(tr);
             });
         }
-        detailsSection.scrollIntoView({ behavior: 'smooth' });
+        // Rolagem suave
+        detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     },
 
     closeDetails() {
-        document.getElementById('transaction-details').style.display = "none";
+        document.getElementById('transaction-details').classList.add('hidden');
     }
 }
 
 const Transaction = {
     add(transaction) {
         transactions.push(transaction);
-        Storage.set(transactions);
+        Storage.setTransactions(transactions);
         App.reload();
     },
     remove(index) {
-        transactions.splice(index, 1);
-        Storage.set(transactions);
-        App.reload();
-        App.closeDetails();
+        if(confirm("Deseja realmente excluir?")) {
+            transactions.splice(index, 1);
+            Storage.setTransactions(transactions);
+            App.reload();
+            App.closeDetails();
+        }
     }
 }
 
@@ -144,7 +184,7 @@ const Form = {
     description: document.querySelector('input#description'),
     amount: document.querySelector('input#amount'),
     date: document.querySelector('input#date'),
-    category: document.querySelector('select#category'), // Pegando o Select
+    category: document.querySelector('select#category'),
 
     getValues() {
         const type = document.querySelector('input[name="type"]:checked').value;
@@ -152,16 +192,15 @@ const Form = {
             description: Form.description.value,
             amount: Form.amount.value,
             date: Form.date.value,
-            category: Form.category.value, // Captura o valor da categoria
+            category: Form.category.value,
             type: type
         }
     },
 
     validateFields() {
         const { description, amount, date, category } = Form.getValues();
-        // Agora valida também se escolheu categoria
         if(description.trim() === "" || amount.trim() === "" || date.trim() === "" || category === "") {
-            throw new Error("Por favor, preencha todos os campos e a categoria");
+            throw new Error("Preencha todos os campos!");
         }
     },
 
@@ -176,7 +215,6 @@ const Form = {
         Form.description.value = "";
         Form.amount.value = "";
         Form.date.value = "";
-        Form.category.selectedIndex = 0; // Reseta o select
     },
 
     submit(event) {
