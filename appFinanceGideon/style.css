@@ -113,41 +113,42 @@ tr:hover td { background: rgba(255,255,255,0.02); }
     .radio-btn { flex: 1; text-align: center; }
 }
 /* =========================================
-   TELA DE LOGIN (CENTRALIZADA E CLEAN)
+   TELA DE LOGIN (CENTRALIZADA E CLEAN) - FIX FINAL
    ========================================= */
+
+/* O fundo que cobre a tela inteira */
 #login-screen {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;   /* Largura total da tela */
     height: 100vh;  /* Altura total da tela */
-    background-color: var(--bg-app); /* Fundo da mesma cor do app */
-    display: flex;
-    align-items: center;     /* Centraliza Verticalmente */
-    justify-content: center; /* Centraliza Horizontalmente */
-    z-index: 9999;           /* Fica por cima de tudo */
-    padding: 20px;
+    background-color: var(--bg-app); /* Usa a cor de fundo do app */
+    display: flex;          /* Ativa o Flexbox */
+    align-items: center;    /* Centraliza Verticalmente */
+    justify-content: center;/* Centraliza Horizontalmente */
+    z-index: 9999;          /* Garante que fica na frente de tudo */
+    padding: 20px;          /* Espaço nas laterais em celulares pequenos */
 }
 
-/* O Cartão de Login */
+/* O Cartão do Formulário */
 .login-card {
-    background: var(--bg-card);
+    background: var(--bg-card); /* Cor do cartão */
     width: 100%;
-    max-width: 400px; /* Largura máxima bonita no PC */
+    max-width: 400px; /* Largura máxima elegante */
     padding: 3rem 2rem;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Sombra elegante */
+    border-radius: 16px; /* Bordas arredondadas */
+    border: 1px solid rgba(255, 255, 255, 0.05); /* Borda sutil */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); /* Sombra moderna */
     text-align: center;
-    animation: fadeIn 0.5s ease-out; /* Efeito suave ao abrir */
 }
 
+/* Títulos e Textos */
 .login-card h2 {
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
     color: var(--text-primary);
     font-weight: 600;
-    letter-spacing: -1px;
 }
 
 .login-card p {
@@ -156,12 +157,21 @@ tr:hover td { background: rgba(255,255,255,0.02); }
     font-size: 0.95rem;
 }
 
-/* Inputs do Login */
+/* Campos de Input */
 .login-card input {
     background: var(--bg-input);
     margin-bottom: 1rem;
-    height: 3.5rem; /* Input mais alto para toque no celular */
+    height: 3.5rem; /* Mais alto para facilitar o toque */
     font-size: 1rem;
+    width: 100%; /* Garante que ocupa a largura do cartão */
+    border-radius: 8px;
+    border: 1px solid transparent;
+    color: var(--text-primary);
+    padding: 0 1rem;
+}
+.login-card input:focus {
+    border-color: var(--primary); /* Cor ao clicar */
+    outline: none;
 }
 
 /* Botão de Entrar */
@@ -181,18 +191,12 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 
 .login-card button:hover {
     filter: brightness(1.1);
-    transform: translateY(-2px);
+    transform: translateY(-2px); /* Leve efeito de subida */
 }
 
-/* Mensagens de Erro/Sucesso */
+/* Mensagem de erro/sucesso */
 #login-msg {
     margin-top: 1.5rem;
     font-size: 0.9rem;
     min-height: 1.2rem;
-}
-
-/* Animação de entrada */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
 }

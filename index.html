@@ -10,18 +10,22 @@
 </head>
 <body>
 
-    <section id="login-screen">
-        <div class="login-card">
-            <h2>Gideon Finance</h2>
-            <p>Faça login para acessar seus dados.</p>
-            <form id="login-form">
-                <input type="email" id="email" placeholder="Seu e-mail" required>
-                <input type="password" id="password" placeholder="Sua senha" required>
-                <button type="submit" id="login-btn">Entrar / Cadastrar</button>
-            </form>
-            <p id="login-msg"></p>
-        </div>
-    </section>
+   <section id="login-screen">
+    <div class="login-card">
+        <div style="margin-bottom: 1rem; font-size: 3rem;">🔐</div> 
+        
+        <h2>Bem-vindo(a)</h2>
+        <p>Insira seu e-mail para entrar ou criar conta automaticamente.</p>
+        
+        <form id="login-form">
+            <input type="email" id="email" placeholder="seu@email.com" required autocomplete="email">
+            <input type="password" id="password" placeholder="Sua senha secreta" required autocomplete="current-password">
+            <button type="submit" id="login-btn">Acessar Sistema</button>
+        </form>
+        
+        <p id="login-msg"></p>
+    </div>
+</section>
 
     <div id="app-content" style="display: none;">
         <header>
