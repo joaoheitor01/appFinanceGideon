@@ -107,6 +107,26 @@ const Utils = {
     getMonthIndex: d => {
          const date = new Date(d);
          return new Date(date.valueOf() + date.getTimezoneOffset() * 60000).getMonth();
+    },
+    
+    // --- NOVA FUNÇÃO DE MÁSCARA ---
+    maskCurrency(input) {
+        let value = input.value.replace(/\D/g, ""); // Remove tudo que não é número
+        value = (Number(value) / 100).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+        });
+        input.value = value;
+    },
+
+    // --- LIMPAR MÁSCARA PARA SALVAR ---
+    parseCurrency(valueString) {
+        // Remove "R$", pontos e espaços. Troca vírgula por ponto.
+        // Ex: "R$ 1.234,56" -> "1234.56"
+        if(!valueString) return 0;
+        // Estratégia segura: pega apenas números, divide por 100
+        let cleanNumbers = valueString.replace(/\D/g, "");
+        return Number(cleanNumbers) / 100;
     }
 }
 
@@ -152,14 +172,20 @@ const App = {
         const tbody = document.getElementById('data-table-body');
         tbody.innerHTML = "";
         
+        // MOSTRAR: Agora aparece na coluna da direita
         section.style.display = 'block';
+        
         if(filtered.length === 0) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center">Vazio</td></tr>`;
         else filtered.forEach(t => {
             const tr = document.createElement('tr');
             tr.innerHTML = `<td>${t.description}</td><td>${t.category}</td><td class="${t.amount > 0 ? 'text-green' : 'text-red'}">${Utils.formatCurrency(t.amount)}</td><td>${Utils.formatDate(t.date)}</td><td style="text-align:right"><span style="cursor:pointer" onclick="DataManager.remove(${t.id})">✕</span></td>`;
             tbody.appendChild(tr);
         });
-        section.scrollIntoView({ behavior: 'smooth' });
+        
+        // Se estiver no mobile, rola até lá. Se for PC, não precisa.
+        if(window.innerWidth < 768) {
+             section.scrollIntoView({ behavior: 'smooth' });
+        }
     },
     closeDetails() { document.getElementById('transaction-details').style.display = 'none'; }
 }
@@ -170,12 +196,17 @@ document.getElementById('login-form').addEventListener('submit', Auth.loginOrReg
 document.getElementById('form-transaction').addEventListener('submit', (e) => {
     e.preventDefault();
     
-    // --- MUDANÇA AQUI: Ler o Toggle Switch ---
     const isExpense = document.getElementById('type-toggle').checked;
     const type = isExpense ? 'expense' : 'income';
-    // -----------------------------------------
     
-    let amount = Number(document.getElementById('amount').value);
+    // --- MUDANÇA AQUI: Usar a função parseCurrency ---
+    let amount = Utils.parseCurrency(document.getElementById('amount').value);
+    
+    if (amount === 0) {
+        alert("Digite um valor!");
+        return;
+    }
+
     if(type === 'expense') amount *= -1;
     
     DataManager.add({
