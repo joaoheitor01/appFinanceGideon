@@ -1,15 +1,69 @@
-// --- STORAGE ---
+// --- CONFIGURAÇÃO DO SUPABASE ---
+// Cole suas chaves aqui (mantenha as aspas)
+const SUPABASE_URL = 'https://kpajxjpliyqclkmdowbc.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_OURRIqDVKngWfW8rOfJdQw_OyQFczHmC';
+
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// --- CATEGORIAS (Mantemos local por enquanto ou podemos migrar depois) ---
 const Storage = {
-    getTransactions() { return JSON.parse(localStorage.getItem("gideon.finances:v5")) || []; },
-    setTransactions(data) { localStorage.setItem("gideon.finances:v5", JSON.stringify(data)); },
-    
     getCategories() { 
         return JSON.parse(localStorage.getItem("gideon.categories")) || ["Alimentação", "Moradia", "Transporte", "Salário", "Lazer", "Saúde", "Outros"];
     },
     setCategories(data) { localStorage.setItem("gideon.categories", JSON.stringify(data)); }
 }
 
-let transactions = Storage.getTransactions();
+let transactions = [];
+
+// --- GERENCIAMENTO DE DADOS (CLOUD) ---
+const DataManager = {
+    async load() {
+        // Busca dados do Supabase
+        const { data, error } = await supabaseClient
+            .from('transactions')
+            .select('*')
+            .order('date', { ascending: true }); // Ordena por data
+
+        if (error) {
+            console.error("Erro ao carregar:", error);
+            alert("Erro de conexão. Verifique o console.");
+        } else {
+            transactions = data;
+            App.reload();
+        }
+    },
+
+    async add(transaction) {
+        // Envia para o Supabase
+        const { error } = await supabaseClient
+            .from('transactions')
+            .insert([transaction]);
+
+        if (error) {
+            alert("Erro ao salvar na nuvem: " + error.message);
+        } else {
+            DataManager.load(); // Recarrega tudo para atualizar a tela
+        }
+    },
+
+    async remove(id) {
+        if(confirm("Deseja realmente excluir?")) {
+            // Deleta do Supabase pelo ID
+            const { error } = await supabaseClient
+                .from('transactions')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                alert("Erro ao excluir: " + error.message);
+            } else {
+                DataManager.load();
+                App.closeDetails();
+            }
+        }
+    }
+}
 
 // --- CATEGORIAS ---
 const Category = {
@@ -18,7 +72,6 @@ const Category = {
     load() {
         const select = document.getElementById('category');
         select.innerHTML = '<option value="" disabled selected>Categoria</option>';
-        
         Category.list.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat;
@@ -30,13 +83,9 @@ const Category = {
     create() {
         const newCat = prompt("Digite o nome da nova categoria:");
         if (newCat && newCat.trim() !== "") {
-            // Adiciona na lista
             Category.list.push(newCat.trim());
-            // Salva
             Storage.setCategories(Category.list);
-            // Recarrega o select
             Category.load();
-            // Seleciona a nova categoria automaticamente
             document.getElementById('category').value = newCat.trim();
         }
     }
@@ -62,12 +111,11 @@ const Utils = {
     }
 }
 
-// --- APP ---
+// --- APP PRINCIPAL ---
 const App = {
     init() {
-        Category.load(); // Carrega as categorias
-        App.updateSummaryTable();
-        App.updateCards();
+        Category.load();
+        DataManager.load(); // Carrega do Banco de Dados
     },
     reload() { 
         App.updateSummaryTable();
@@ -139,7 +187,7 @@ const App = {
             detailsBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-secondary)">Sem transações neste mês.</td></tr>`;
         } else {
             filtered.forEach(t => {
-                const originalIndex = transactions.indexOf(t);
+                // Aqui usamos o ID do Supabase para deletar
                 const tr = document.createElement('tr');
                 const amountClass = t.amount > 0 ? "text-green" : "text-red";
                 
@@ -149,34 +197,17 @@ const App = {
                     <td class="${amountClass}">${Utils.formatCurrency(t.amount)}</td>
                     <td style="color: var(--text-secondary); font-size: 0.85rem">${Utils.formatDate(t.date)}</td>
                     <td style="text-align: right;">
-                         <span style="cursor:pointer; color: var(--text-secondary); font-size: 1rem;" onclick="Transaction.remove(${originalIndex})" title="Excluir">✕</span>
+                         <span style="cursor:pointer; color: var(--text-secondary); font-size: 1rem;" onclick="DataManager.remove(${t.id})" title="Excluir">✕</span>
                     </td>
                 `;
                 detailsBody.appendChild(tr);
             });
         }
-        // Rolagem suave
         detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     },
 
     closeDetails() {
         document.getElementById('transaction-details').classList.add('hidden');
-    }
-}
-
-const Transaction = {
-    add(transaction) {
-        transactions.push(transaction);
-        Storage.setTransactions(transactions);
-        App.reload();
-    },
-    remove(index) {
-        if(confirm("Deseja realmente excluir?")) {
-            transactions.splice(index, 1);
-            Storage.setTransactions(transactions);
-            App.reload();
-            App.closeDetails();
-        }
     }
 }
 
@@ -208,7 +239,7 @@ const Form = {
         let { description, amount, date, category, type } = Form.getValues();
         amount = Number(amount);
         if(type === 'expense') amount = amount * -1;
-        return { description, amount, date, category };
+        return { description, amount, date, category, type };
     },
 
     clearFields() {
@@ -222,7 +253,7 @@ const Form = {
         try {
             Form.validateFields();
             const transaction = Form.formatValues();
-            Transaction.add(transaction);
+            DataManager.add(transaction); // Salva na Nuvem
             Form.clearFields();
         } catch (error) {
             alert(error.message);
