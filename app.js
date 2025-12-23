@@ -1,271 +1,233 @@
-const STORAGE_KEY = 'dev.finances:transactions';
-
+// --- CONFIGURAÇÃO E DADOS ---
 const Storage = {
     get() {
-        const data = localStorage.getItem(STORAGE_KEY);
-        return JSON.parse(data) || [];
+        return JSON.parse(localStorage.getItem("gideon.finances:v1")) || [];
     },
-
     set(transactions) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+        localStorage.setItem("gideon.finances:v1", JSON.stringify(transactions));
     }
-};
+}
 
-const Transaction = {
-    all: Storage.get(),
+// Dados iniciais para não começar vazio (Backup do seu Notion)
+const initialData = [
+    { description: "Salário", amount: 1354.05, date: "2025-10-30" },
+    { description: "Despesas Diversas", amount: -662.62, date: "2025-10-30" },
+    { description: "Renda Extra", amount: 330.00, date: "2025-11-05" },
+    { description: "Gastos Novembro", amount: -730.10, date: "2025-11-05" },
+];
 
-    add(transaction) {
-        if (!transaction.id) {
-            transaction.id = Date.now();
-        }
-        this.all.push(transaction);
-        Storage.set(this.all);
-        console.log("Gideon: Transação registrada com sucesso.", transaction);
-    },
+// Se for o primeiro acesso, carrega os dados iniciais
+let transactions = Storage.get();
+if (transactions.length === 0) {
+    transactions = initialData;
+    Storage.set(transactions);
+}
 
-    remove(index) {
-        this.all.splice(index, 1);
-        Storage.set(this.all);
-        console.log(`Gideon: Transação removida do índice ${index}.`);
-    },
-
-    getMonthlySummary(year) {
-        const monthlySummary = Array.from({ length: 12 }, (_, i) => ({
-            month: i,
-            income: 0,
-            expense: 0,
-            balance: 0
-        }));
-
-        this.all.forEach(transaction => {
-            const transactionDate = new Date(transaction.date);
-            if (transactionDate.getFullYear() === year) {
-                const month = transactionDate.getMonth();
-                if (transaction.type === 'income') {
-                    monthlySummary[month].income += transaction.amount;
-                } else {
-                    monthlySummary[month].expense += transaction.amount;
-                }
-            }
-        });
-
-        monthlySummary.forEach(monthData => {
-            monthData.balance = monthData.income - monthData.expense;
-        });
-
-        return monthlySummary;
-    }
-};
-
+// --- UTILITÁRIOS ---
 const Utils = {
-    formatAmount(value) {
-        value = Number(value);
-        return value.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL"
-        });
+    formatCurrency(value) {
+        const signal = Number(value) < 0 ? "-" : "";
+        value = String(value).replace(/\D/g, "");
+        value = Number(value) / 100;
+        value = value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        return signal + value; // Remove o sinal duplo se o toLocaleString já colocar
     },
-
+    
     formatDate(date) {
         const splittedDate = date.split("-");
         return `${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`;
     },
 
-    getMonthName(monthIndex) {
-        const months = [
-            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-        ];
-        return months[monthIndex];
+    // Retorna o índice do mês (0 = Janeiro, 10 = Novembro) baseado na data "AAAA-MM-DD"
+    getMonthFromDate(dateString) {
+        const date = new Date(dateString);
+        // Pequeno fix para fuso horário não pular o dia/mês
+        const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+        const correctDate = new Date(date.getTime() + userTimezoneOffset);
+        return correctDate.getMonth();
     }
-};
+}
 
-const DOM = {
-    transactionsContainer: document.querySelector('#transactions-list'),
-    monthlySummaryContainer: document.querySelector('#monthly-summary-body'),
-
-    addTransaction(transaction, index) {
-        const li = document.createElement('li');
-        li.dataset.index = index;
-        li.innerHTML = DOM.innerHTMLTransaction(transaction, index);
-        DOM.transactionsContainer.appendChild(li);
-    },
-
-    innerHTMLTransaction(transaction, index) {
-        const CSSclass = transaction.type === "expense" ? "expense" : "income";
-        const amount = Utils.formatAmount(Math.abs(transaction.amount));
-
-        const html = `
-            <div class="transaction-info">
-                <span class="description">${transaction.description}</span>
-                <span class="date">${Utils.formatDate(transaction.date)}</span>
-            </div>
-            <div class="transaction-values">
-                <span class="${CSSclass}">${transaction.type === 'expense' ? '- ' : ''}${amount}</span>
-                <img onclick="App.removeTransaction(${index})" class="remove-icon" src="https://img.icons8.com/ios-glyphs/30/e92929/trash--v1.png" alt="Remover" style="cursor: pointer; width: 20px; vertical-align: middle; margin-left: 10px;">
-            </div>
-        `;
-
-        return html;
-    },
-
-    updateBalance() {
-        let income = 0;
-        let expense = 0;
-
-        Transaction.all.forEach(transaction => {
-            const amount = Number(transaction.amount);
-
-            if (transaction.type === 'income') {
-                income += amount;
-            } else {
-                expense += amount;
-            }
-        });
-
-        const total = income - expense;
-
-        document.getElementById('display-income').innerHTML = Utils.formatAmount(income);
-        document.getElementById('display-expense').innerHTML = Utils.formatAmount(expense);
-        document.getElementById('display-total').innerHTML = Utils.formatAmount(total);
-    },
-
-    clearTransactions() {
-        DOM.transactionsContainer.innerHTML = "";
-        if (Transaction.all.length === 0) {
-            const li = document.createElement('li');
-            li.classList.add('empty-state');
-            li.innerText = 'Nenhuma transação registrada.';
-            DOM.transactionsContainer.appendChild(li);
-        }
-    },
-
-    renderMonthlySummary(summary) {
-        DOM.monthlySummaryContainer.innerHTML = "";
-        summary.forEach(monthData => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${Utils.getMonthName(monthData.month)}</td>
-                <td class="text-right positive">${Utils.formatAmount(monthData.income)}</td>
-                <td class="text-right negative">${Utils.formatAmount(monthData.expense)}</td>
-                <td class="text-right ${monthData.balance >= 0 ? 'positive' : 'negative'}">${Utils.formatAmount(monthData.balance)}</td>
-            `;
-            DOM.monthlySummaryContainer.appendChild(tr);
-        });
-    }
-};
-
+// --- LÓGICA PRINCIPAL ---
 const App = {
     init() {
-        App.reload();
+        App.updateSummaryTable();
+        App.updateGlobalBalance();
     },
 
     reload() {
-        DOM.clearTransactions();
-        Transaction.all.forEach((transaction, index) => {
-            DOM.addTransaction(transaction, index);
-        });
-        DOM.updateBalance();
-        const currentYear = new Date().getFullYear();
-        const monthlySummary = Transaction.getMonthlySummary(currentYear);
-        DOM.renderMonthlySummary(monthlySummary);
+        App.init();
     },
 
-    addTransaction(transaction) {
-        Transaction.add(transaction);
-        App.reload();
-        modalOverlay.classList.add('hidden');
-        document.getElementById('form-transaction').reset();
-    },
+    // 1. Recalcula a tabela de Resumo Mensal baseada nas transações reais
+    updateSummaryTable() {
+        const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        const tableBody = document.getElementById('monthly-summary-body');
+        tableBody.innerHTML = "";
 
-    removeTransaction(index) {
-        Transaction.remove(index);
-        App.reload();
-    }
-};
+        // Cria um array zerado para acumular os valores
+        let monthlyData = months.map(name => ({ name, income: 0, expense: 0, balance: 0 }));
 
-const modalOverlay = document.getElementById('modal-overlay');
-const settingsOverlay = document.getElementById('settings-overlay');
+        // Percorre TODAS as transações e soma no mês correto
+        transactions.forEach(t => {
+            const monthIndex = Utils.getMonthFromDate(t.date);
+            const amount = Number(t.amount);
 
-document.getElementById('btn-add-transaction').addEventListener('click', () => {
-    modalOverlay.classList.remove('hidden');
-    console.log("Abrir modal nova transação");
-});
-
-document.getElementById('modal-close').addEventListener('click', () => {
-    modalOverlay.classList.add('hidden');
-});
-
-document.getElementById('btn-settings').addEventListener('click', () => {
-    settingsOverlay.classList.remove('hidden');
-    console.log("Abrir configurações");
-});
-
-document.getElementById('settings-close').addEventListener('click', () => {
-    settingsOverlay.classList.add('hidden');
-});
-
-document.getElementById('form-transaction').addEventListener('submit', (event) => {
-    event.preventDefault();
-    console.log("Submissão do formulário detectada");
-
-    const description = document.getElementById('description').value;
-    const amount = document.getElementById('amount').value;
-    const date = document.getElementById('date').value;
-    const type = document.querySelector('input[name="type"]:checked').value;
-
-    if (description.trim() === '' || amount.trim() === '' || date.trim() === '') {
-        alert("Por favor, preencha todos os campos.");
-        return;
-    }
-
-    const transaction = {
-        description,
-        amount: parseFloat(amount),
-        date,
-        type
-    };
-
-    App.addTransaction(transaction);
-});
-
-document.getElementById('btn-export').addEventListener('click', () => {
-    console.log("Solicitado exportação de dados");
-    const data = JSON.stringify(Transaction.all, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'transactions.json';
-    a.click();
-    URL.revokeObjectURL(url);
-});
-
-document.getElementById('file-import').addEventListener('change', (event) => {
-    console.log("Arquivo selecionado para importação");
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const transactions = JSON.parse(e.target.result);
-                Storage.set(transactions);
-                App.reload();
-            } catch (error) {
-                alert("Erro ao importar o arquivo. Verifique se o formato é JSON válido.");
-                console.error("Erro de parse no JSON:", error);
+            if (amount > 0) {
+                monthlyData[monthIndex].income += amount;
+            } else {
+                monthlyData[monthIndex].expense += amount;
             }
-        };
-        reader.readAsText(file);
-    }
-});
+            monthlyData[monthIndex].balance += amount;
+        });
 
-document.getElementById('btn-clear').addEventListener('click', () => {
-    console.log("Solicitada limpeza total");
-    if (confirm("Tem certeza que deseja apagar todos os dados?")) {
-        Storage.set([]);
+        // Desenha a tabela
+        monthlyData.forEach((m, index) => {
+            const tr = document.createElement('tr');
+            // Torna a linha clicável
+            tr.onclick = () => App.showMonthDetails(index, m.name);
+            tr.style.cursor = "pointer";
+            
+            // Define cor do saldo
+            const balanceClass = m.balance >= 0 ? 'text-green' : 'text-red';
+            const rowOpacity = (m.income === 0 && m.expense === 0) ? "0.5" : "1"; // Deixa meses vazios mais apagados
+
+            tr.innerHTML = `
+                <td style="opacity: ${rowOpacity}; font-weight: 500;">${m.name} <small style="font-size: 0.7rem">🔍</small></td>
+                <td class="text-right text-green" style="opacity: ${rowOpacity}">${Utils.formatCurrency(m.income)}</td>
+                <td class="text-right text-red" style="opacity: ${rowOpacity}">${Utils.formatCurrency(m.expense)}</td>
+                <td class="text-right ${balanceClass}" style="font-weight: bold; opacity: ${rowOpacity}">
+                    ${Utils.formatCurrency(m.balance)}
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    },
+
+    // 2. Atualiza o Card Grandão lá em cima
+    updateGlobalBalance() {
+        const total = transactions.reduce((acc, t) => acc + Number(t.amount), 0);
+        const displayTotal = document.getElementById('display-total');
+        
+        displayTotal.innerText = Utils.formatCurrency(total);
+        displayTotal.style.color = total >= 0 ? "#2ecc71" : "#e74c3c";
+    },
+
+    // 3. Mostra os detalhes quando clica no mês
+    showMonthDetails(monthIndex, monthName) {
+        const detailsSection = document.getElementById('transaction-details');
+        const detailsTitle = document.getElementById('month-title');
+        const detailsBody = document.querySelector('#data-table tbody');
+
+        // Filtra transações daquele mês
+        const filtered = transactions.filter(t => Utils.getMonthFromDate(t.date) === monthIndex);
+        
+        // Exibe a seção
+        detailsSection.style.display = "block";
+        detailsTitle.innerText = `Extrato de ${monthName}`;
+        detailsBody.innerHTML = "";
+
+        if(filtered.length === 0) {
+            detailsBody.innerHTML = `<tr><td colspan="4" style="text-align:center">Nenhuma movimentação neste mês.</td></tr>`;
+            // Rola a tela até os detalhes
+            detailsSection.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
+        filtered.forEach((t, indexInFiltered) => {
+            const tr = document.createElement('tr');
+            const cssClass = t.amount > 0 ? "text-green" : "text-red";
+            
+            // Precisamos encontrar o índice real no array principal para poder deletar
+            const originalIndex = transactions.indexOf(t);
+
+            tr.innerHTML = `
+                <td>${t.description}</td>
+                <td class="${cssClass}">${Utils.formatCurrency(t.amount)}</td>
+                <td>${Utils.formatDate(t.date)}</td>
+                <td>
+                    <img onclick="Transaction.remove(${originalIndex})" src="./assets/minus.svg" alt="Remover" style="cursor: pointer; width: 20px;"> 
+                    </td>
+            `;
+            detailsBody.appendChild(tr);
+        });
+
+        // Rola a tela até os detalhes
+        detailsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// --- GERENCIAMENTO DE TRANSAÇÕES ---
+const Transaction = {
+    add(transaction) {
+        transactions.push(transaction);
+        Storage.set(transactions);
         App.reload();
-    }
-});
+        // Tenta reabrir os detalhes do mês da transação adicionada
+        const monthIdx = Utils.getMonthFromDate(transaction.date);
+        // App.showMonthDetails(monthIdx, "Recente"); // Opcional
+    },
 
+    remove(index) {
+        transactions.splice(index, 1);
+        Storage.set(transactions);
+        App.reload();
+        // Esconde detalhes após remover para evitar erro de índice visual
+        document.getElementById('transaction-details').style.display = "none";
+    }
+}
+
+// --- FORMULÁRIO E MODAL ---
+const Modal = {
+    open() { document.querySelector('.modal-overlay').classList.add('active'); },
+    close() { document.querySelector('.modal-overlay').classList.remove('active'); }
+}
+
+const Form = {
+    description: document.querySelector('input#description'),
+    amount: document.querySelector('input#amount'),
+    date: document.querySelector('input#date'),
+
+    getValues() {
+        return {
+            description: Form.description.value,
+            amount: Form.amount.value,
+            date: Form.date.value
+        }
+    },
+
+    validateFields() {
+        const { description, amount, date } = Form.getValues();
+        if(description.trim() === "" || amount.trim() === "" || date.trim() === "") {
+            throw new Error("Por favor, preencha todos os campos");
+        }
+    },
+
+    formatValues() {
+        let { description, amount, date } = Form.getValues();
+        amount = Number(amount);
+        return { description, amount, date };
+    },
+
+    clearFields() {
+        Form.description.value = "";
+        Form.amount.value = "";
+        Form.date.value = "";
+    },
+
+    submit(event) {
+        event.preventDefault();
+        try {
+            Form.validateFields();
+            const transaction = Form.formatValues();
+            Transaction.add(transaction);
+            Form.clearFields();
+            Modal.close();
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+}
+
+// Inicialização
 App.init();
