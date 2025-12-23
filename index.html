@@ -74,63 +74,58 @@
 
         /* --- APP PRINCIPAL --- */
         #app-content { display: none; }
-        
-        /* Layout Geral */
         .container { max-width: 1024px; margin: 0 auto; padding: 0 1.5rem; }
         
-        /* HEADER NOVO: Alinhado e Flexível */
         header { padding: 2rem 0; }
-        .header-content {
-            display: flex;
-            justify-content: space-between; /* Separa Logo (Esq) e User (Dir) */
-            align-items: center;
-        }
-
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
         #logo { font-weight: 700; font-size: 1.5rem; letter-spacing: -1px; color: var(--text-primary); }
-        
-        .user-area {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-        
-        .btn-logout {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); 
-            color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s;
-            font-size: 0.8rem;
-        }
+        .user-area { display: flex; align-items: center; gap: 15px; font-size: 0.9rem; color: var(--text-secondary); }
+        .btn-logout { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
         .btn-logout:hover { background: rgba(255,255,255,0.1); }
 
-        /* CARDS MENORES */
-        .summary-grid { 
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; 
-            margin-bottom: 2rem; 
-        }
-        .card { 
-            background: var(--bg-card); border-radius: var(--radius); 
-            padding: 1.2rem; /* Padding reduzido (antes era 1.5rem) */
-            border: 1px solid rgba(255,255,255,0.05); 
-        }
-        .card header { 
-            padding: 0; margin-bottom: 0.5rem; 
-            display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 0.85rem; 
-        }
-        .card h3 { 
-            font-size: 1.5rem; /* Fonte menor (antes era 1.8 ou 2rem) */
-            font-weight: 600; margin-top: 0.2rem; 
-        }
+        /* CARDS */
+        .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .card { background: var(--bg-card); border-radius: var(--radius); padding: 1.2rem; border: 1px solid rgba(255,255,255,0.05); }
+        .card header { padding: 0; margin-bottom: 0.5rem; display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 0.85rem; }
+        .card h3 { font-size: 1.5rem; font-weight: 600; margin-top: 0.2rem; }
         .text-green { color: var(--accent-green); } .text-red { color: var(--accent-red); }
         
-        /* Formulário e Tabelas */
-        .form-section input, .form-section select { 
-            width: 100%; height: 3rem; background: #27272a; border: none; border-radius: 8px; color: #fff; padding: 0 1rem; 
-        }
+        /* FORMULÁRIO */
+        .form-section input, .form-section select { width: 100%; height: 3rem; background: #27272a; border: none; border-radius: 8px; color: #fff; padding: 0 1rem; }
         .form-row { display: grid; grid-template-columns: 2fr 1fr 1.2fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
         .actions-row { display: flex; justify-content: space-between; align-items: center; }
         .btn-submit { background: #fff; color: #000; border: none; padding: 0 2rem; height: 3rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
         
+        /* --- NOVO TOGGLE SWITCH (Entrada vs Saída) --- */
+        .toggle-wrapper { display: flex; align-items: center; gap: 12px; }
+        .toggle-label { font-size: 0.9rem; font-weight: 500; color: var(--text-secondary); transition: color 0.3s; }
+        
+        /* O Interruptor */
+        .switch { position: relative; display: inline-block; width: 60px; height: 30px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        
+        /* O Deslizante (Slider) */
+        .slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--accent-green); /* VERDE por padrão (Entrada) */
+            transition: .4s; border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute; content: "";
+            height: 22px; width: 22px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s; border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        /* Estado CHECADO (Saída) -> Fica VERMELHO */
+        input:checked + .slider { background-color: var(--accent-red); }
+        input:checked + .slider:before { transform: translateX(30px); }
+
+        /* Tabelas */
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .text-right { text-align: right; }
@@ -166,11 +161,9 @@
     </section>
 
     <div id="app-content">
-        
         <header>
             <div class="container header-content">
-                <div id="logo">gideon</div>
-                
+                <div id="logo">gideon.</div>
                 <div class="user-area">
                     <span id="user-email"></span>
                     <button onclick="Auth.logout()" class="btn-logout">Sair</button>
@@ -205,11 +198,17 @@
                         </div>
                         <div><input type="date" id="date" required /></div>
                     </div>
+                    
                     <div class="actions-row">
-                        <div style="display:flex; gap:1rem;">
-                            <label style="color:#aaa;"><input type="radio" name="type" value="income" checked> Entrada</label>
-                            <label style="color:#aaa;"><input type="radio" name="type" value="expense"> Saída</label>
+                        <div class="toggle-wrapper">
+                            <span class="toggle-label" style="color: var(--accent-green);">Entrada</span>
+                            <label class="switch">
+                                <input type="checkbox" id="type-toggle">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="toggle-label" style="color: var(--accent-red);">Saída</span>
                         </div>
+
                         <button type="submit" class="btn-submit">Adicionar</button>
                     </div>
                 </form>
@@ -232,7 +231,8 @@
                 </div>
                 <table>
                     <thead><tr><th>Desc</th><th>Tag</th><th>Valor</th><th>Data</th><th></th></tr></thead>
-                    <tbody id="data-table-body"></tbody> </table>
+                    <tbody id="data-table-body"></tbody>
+                </table>
             </section>
         </main>
     </div>

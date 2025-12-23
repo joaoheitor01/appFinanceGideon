@@ -9,115 +9,76 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 let transactions = [];
 let user = null;
 
-// --- AUTENTICAÇÃO ---
+// --- AUTH ---
 const Auth = {
     async init() {
         const { data } = await supabaseClient.auth.getSession();
         user = data.session?.user;
-        
-        // Listener: Monitora se entrou ou saiu
         supabaseClient.auth.onAuthStateChange((event, session) => {
             user = session?.user;
             Auth.toggleScreen();
             if(user) {
                 document.getElementById('user-email').innerText = user.email;
-                DataManager.load(); // Carrega dados DO USUÁRIO
+                DataManager.load();
             }
         });
         Auth.toggleScreen();
     },
-
     toggleScreen() {
-        if (user) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-content').style.display = 'block';
-        } else {
-            document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('app-content').style.display = 'none';
-        }
+        document.getElementById('login-screen').style.display = user ? 'none' : 'flex';
+        document.getElementById('app-content').style.display = user ? 'block' : 'none';
     },
-
     async loginOrRegister(event) {
         event.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const msg = document.getElementById('login-msg');
         const btn = document.getElementById('login-btn');
-
         btn.innerText = "Carregando...";
         
-        // 1. Tenta Login
         const { error: loginError } = await supabaseClient.auth.signInWithPassword({ email, password });
-        
-        if (!loginError) {
-            btn.innerText = "Sucesso!";
-            return; // O listener vai lidar com o resto
-        }
+        if (!loginError) return;
 
-        // 2. Se falhar (usuário não existe?), tenta Cadastrar
         if (loginError.message.includes("Invalid login")) {
-             // Tenta criar conta
              const { error: signupError } = await supabaseClient.auth.signUp({ email, password });
-             if (signupError) {
-                 msg.style.color = "red";
-                 msg.innerText = "Erro: " + signupError.message;
-             } else {
-                 msg.style.color = "#10b981";
-                 msg.innerText = "Conta criada! Entrando...";
-                 // Faz login automático após criar
+             if (!signupError) {
                  await supabaseClient.auth.signInWithPassword({ email, password });
+             } else {
+                 document.getElementById('login-msg').innerText = "Erro: " + signupError.message;
+                 document.getElementById('login-msg').style.color = "red";
              }
         } else {
-            msg.style.color = "red";
-            msg.innerText = "Erro: " + loginError.message;
+            document.getElementById('login-msg').innerText = "Erro: " + loginError.message;
+            document.getElementById('login-msg').style.color = "red";
         }
-        btn.innerText = "Entrar / Cadastrar";
+        btn.innerText = "LOGIN";
     },
-
     async logout() {
         await supabaseClient.auth.signOut();
         window.location.reload();
     }
 }
 
-// --- DADOS (CLOUD) ---
+// --- DATA ---
 const DataManager = {
     async load() {
         if(!user) return;
-        // O Supabase filtra automaticamente pelo user_id graças ao RLS que criamos
-        const { data, error } = await supabaseClient
-            .from('transactions')
-            .select('*')
-            .order('date', { ascending: true });
-
-        if (!error) {
-            transactions = data;
-            App.reload();
-        }
+        const { data, error } = await supabaseClient.from('transactions').select('*').order('date', { ascending: true });
+        if (!error) { transactions = data; App.reload(); }
     },
-
     async add(transaction) {
-        // Adiciona user_id automaticamente na inserção
-        const { error } = await supabaseClient
-            .from('transactions')
-            .insert([{ ...transaction, user_id: user.id }]); // Garante o ID
-
-        if (error) alert("Erro ao salvar: " + error.message);
+        const { error } = await supabaseClient.from('transactions').insert([{ ...transaction, user_id: user.id }]);
+        if (error) alert("Erro: " + error.message);
         else DataManager.load();
     },
-
     async remove(id) {
         if(confirm("Excluir?")) {
             const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
-            if (!error) {
-                DataManager.load();
-                App.closeDetails();
-            }
+            if (!error) { DataManager.load(); App.closeDetails(); }
         }
     }
 }
 
-// --- CATEGORIAS (Local) ---
+// --- APP ---
 const Category = {
     list: JSON.parse(localStorage.getItem("gideon.categories")) || ["Alimentação", "Moradia", "Transporte", "Salário", "Lazer"],
     load() {
@@ -140,7 +101,6 @@ const Category = {
     }
 }
 
-// --- UI & UTILS ---
 const Utils = {
     formatCurrency: val => Number(val).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
     formatDate: d => d.split("-").reverse().join("/"),
@@ -158,7 +118,6 @@ const App = {
         const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         const tbody = document.getElementById('monthly-summary-body');
         tbody.innerHTML = "";
-        
         let mData = months.map(name => ({ name, income: 0, expense: 0, balance: 0 }));
         
         transactions.forEach(t => {
@@ -190,10 +149,10 @@ const App = {
         const filtered = transactions.filter(t => Utils.getMonthIndex(t.date) === idx);
         const section = document.getElementById('transaction-details');
         document.getElementById('month-title').innerText = `Extrato de ${name}`;
-        const tbody = document.querySelector('#data-table tbody');
+        const tbody = document.getElementById('data-table-body');
         tbody.innerHTML = "";
         
-        section.classList.remove('hidden');
+        section.style.display = 'block';
         if(filtered.length === 0) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center">Vazio</td></tr>`;
         else filtered.forEach(t => {
             const tr = document.createElement('tr');
@@ -202,7 +161,7 @@ const App = {
         });
         section.scrollIntoView({ behavior: 'smooth' });
     },
-    closeDetails() { document.getElementById('transaction-details').classList.add('hidden'); }
+    closeDetails() { document.getElementById('transaction-details').style.display = 'none'; }
 }
 
 // Event Listeners
@@ -210,7 +169,12 @@ document.getElementById('login-form').addEventListener('submit', Auth.loginOrReg
 
 document.getElementById('form-transaction').addEventListener('submit', (e) => {
     e.preventDefault();
-    const type = document.querySelector('input[name="type"]:checked').value;
+    
+    // --- MUDANÇA AQUI: Ler o Toggle Switch ---
+    const isExpense = document.getElementById('type-toggle').checked;
+    const type = isExpense ? 'expense' : 'income';
+    // -----------------------------------------
+    
     let amount = Number(document.getElementById('amount').value);
     if(type === 'expense') amount *= -1;
     
@@ -227,5 +191,4 @@ document.getElementById('form-transaction').addEventListener('submit', (e) => {
     document.getElementById('date').value = "";
 });
 
-// Start
 App.init();
