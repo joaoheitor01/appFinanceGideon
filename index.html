@@ -5,124 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gideon Finance</title>
     <link rel="stylesheet" href="./style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <header>
-        <div id="logo">gideon.</div>
-    </header>
-
-    <main class="container">
-        
-        <section class="summary-grid">
-            <div class="card">
-                <header>
-                    <span>Entradas</span>
-                    <img src="https://img.icons8.com/ios-glyphs/30/10b981/circled-up-2.png" alt="Entrada" width="24"/>
-                </header>
-                <h3 id="incomeDisplay" class="text-green">R$ 0,00</h3>
-            </div>
-            <div class="card">
-                <header>
-                    <span>Saídas</span>
-                    <img src="https://img.icons8.com/ios-glyphs/30/ef4444/circled-down-2.png" alt="Saída" width="24"/>
-                </header>
-                <h3 id="expenseDisplay" class="text-red">R$ 0,00</h3>
-            </div>
-            <div class="card total">
-                <header>
-                    <span>Saldo Total</span>
-                    <span style="font-size: 1.2rem">💰</span>
-                </header>
-                <h3 id="display-total">R$ 0,00</h3>
-            </div>
-        </section>
-
-        <section class="card form-section">
-            <form id="form-transaction">
-                <div class="form-row">
-                    <div class="input-group description-group">
-                        <input type="text" id="description" name="description" placeholder="Descrição (ex: Almoço)" required />
-                    </div>
-
-                    <div class="input-group">
-                        <input type="number" step="0.01" id="amount" name="amount" placeholder="R$ 0,00" required />
-                    </div>
-
-                    <div class="input-group category-wrapper">
-                        <select id="category" name="category" required>
-                            </select>
-                        <button type="button" class="btn-add-cat" onclick="Category.create()" title="Nova Categoria">+</button>
-                    </div>
-
-                    <div class="input-group">
-                        <input type="date" id="date" name="date" required />
-                    </div>
-                </div>
-
-                <div class="actions-row">
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="type" value="income" checked>
-                            <span class="radio-btn income">Entrada</span>
-                        </label>
-                        <label>
-                            <input type="radio" name="type" value="expense">
-                            <span class="radio-btn expense">Saída</span>
-                        </label>
-                    </div>
-                    
-                    <button type="submit" class="btn-submit">Adicionar</button>
-                </div>
+    <section id="login-screen">
+        <div class="login-card">
+            <h2>Gideon Finance</h2>
+            <p>Faça login para acessar seus dados.</p>
+            <form id="login-form">
+                <input type="email" id="email" placeholder="Seu e-mail" required>
+                <input type="password" id="password" placeholder="Sua senha" required>
+                <button type="submit" id="login-btn">Entrar / Cadastrar</button>
             </form>
-        </section>
+            <p id="login-msg"></p>
+        </div>
+    </section>
 
-        <section class="content-grid">
-            <div class="card table-card">
-                <h2 class="card-title">Resumo Anual</h2>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Mês</th>
-                                <th class="text-right">Entradas</th>
-                                <th class="text-right">Saídas</th>
-                                <th class="text-right">Saldo</th>
-                            </tr>
-                        </thead>
-                        <tbody id="monthly-summary-body"></tbody>
-                    </table>
+    <div id="app-content" style="display: none;">
+        <header>
+            <div id="logo">gideon. <span id="user-email" style="font-size: 0.8rem; opacity: 0.7;"></span> <button onclick="Auth.logout()" class="btn-logout">Sair</button></div>
+        </header>
+
+        <main class="container">
+            <section class="summary-grid">
+                <div class="card">
+                    <header><span>Entradas</span></header>
+                    <h3 id="incomeDisplay" class="text-green">R$ 0,00</h3>
                 </div>
-            </div>
-
-            <div id="transaction-details" class="card table-card hidden">
-                <div class="header-details">
-                    <h2 id="month-title" class="card-title">Detalhes</h2>
-                    <button onclick="App.closeDetails()" class="btn-close">✕</button>
+                <div class="card">
+                    <header><span>Saídas</span></header>
+                    <h3 id="expenseDisplay" class="text-red">R$ 0,00</h3>
                 </div>
-                <div class="table-responsive">
-                    <table id="data-table">
-                        <thead>
-                            <tr>
-                                <th>Descrição</th>
-                                <th>Tag</th>
-                                <th>Valor</th>
-                                <th>Data</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                <div class="card total">
+                    <header><span>Saldo Total</span></header>
+                    <h3 id="display-total">R$ 0,00</h3>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+            <section class="card form-section">
+                <form id="form-transaction">
+                    <div class="form-row">
+                        <div class="input-group"><input type="text" id="description" placeholder="Descrição" required /></div>
+                        <div class="input-group"><input type="number" step="0.01" id="amount" placeholder="R$ 0,00" required /></div>
+                        <div class="input-group category-wrapper">
+                            <select id="category" required></select>
+                            <button type="button" class="btn-add-cat" onclick="Category.create()">+</button>
+                        </div>
+                        <div class="input-group"><input type="date" id="date" required /></div>
+                    </div>
+                    <div class="actions-row">
+                        <div class="radio-group">
+                            <label><input type="radio" name="type" value="income" checked><span class="radio-btn income">Entrada</span></label>
+                            <label><input type="radio" name="type" value="expense"><span class="radio-btn expense">Saída</span></label>
+                        </div>
+                        <button type="submit" class="btn-submit">Adicionar</button>
+                    </div>
+                </form>
+            </section>
 
-<script src="./app.js"></script>
+            <section class="content-grid">
+                <div class="card table-card">
+                    <h2 class="card-title">Resumo</h2>
+                    <div class="table-responsive">
+                        <table>
+                            <thead><tr><th>Mês</th><th class="text-right">Entradas</th><th class="text-right">Saídas</th><th class="text-right">Saldo</th></tr></thead>
+                            <tbody id="monthly-summary-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="transaction-details" class="card table-card hidden">
+                    <div class="header-details"><h2 id="month-title">Detalhes</h2><button onclick="App.closeDetails()" class="btn-close">✕</button></div>
+                    <div class="table-responsive">
+                        <table id="data-table"><thead><tr><th>Desc</th><th>Tag</th><th>Valor</th><th>Data</th><th></th></tr></thead><tbody></tbody></table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="./app.js"></script>
 </body>
 </html>
