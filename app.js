@@ -1,26 +1,15 @@
-// --- DADOS E STORAGE ---
 const Storage = {
-    get() {
-        return JSON.parse(localStorage.getItem("gideon.finances:v2")) || [];
-    },
-    set(transactions) {
-        localStorage.setItem("gideon.finances:v2", JSON.stringify(transactions));
-    }
+    get() { return JSON.parse(localStorage.getItem("gideon.finances:v3")) || []; },
+    set(transactions) { localStorage.setItem("gideon.finances:v3", JSON.stringify(transactions)); }
 }
 
-// Dados iniciais
 const initialData = [
-    { description: "Salário Inicial", amount: 1354.05, date: "2025-10-30" },
-    { description: "Aluguel", amount: -662.62, date: "2025-10-30" },
+    { description: "Salário Teste", amount: 2000, date: "2025-10-30" }
 ];
 
 let transactions = Storage.get();
-if (transactions.length === 0) {
-    transactions = initialData;
-    Storage.set(transactions);
-}
+if (transactions.length === 0) { transactions = initialData; Storage.set(transactions); }
 
-// --- UTILITÁRIOS ---
 const Utils = {
     formatCurrency(value) {
         const signal = Number(value) < 0 ? "-" : "";
@@ -36,22 +25,17 @@ const Utils = {
     getMonthFromDate(dateString) {
         const date = new Date(dateString);
         const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-        const correctDate = new Date(date.getTime() + userTimezoneOffset);
-        return correctDate.getMonth();
+        return new Date(date.getTime() + userTimezoneOffset).getMonth();
     }
 }
 
-// --- APP PRINCIPAL ---
 const App = {
     init() {
         App.updateSummaryTable();
         App.updateCards();
     },
-    reload() {
-        App.init();
-    },
-    
-    // Atualiza a tabela de Meses
+    reload() { App.init(); },
+
     updateSummaryTable() {
         const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         const tableBody = document.getElementById('monthly-summary-body');
@@ -71,7 +55,6 @@ const App = {
             const tr = document.createElement('tr');
             tr.onclick = () => App.showMonthDetails(index, m.name);
             tr.style.cursor = "pointer";
-            
             const balanceClass = m.balance >= 0 ? 'text-green' : 'text-red';
             const rowOpacity = (m.income === 0 && m.expense === 0) ? "0.5" : "1";
 
@@ -87,25 +70,20 @@ const App = {
         });
     },
 
-    // Atualiza os Cards do topo
     updateCards() {
         let income = 0;
         let expense = 0;
-
         transactions.forEach(t => {
             if(t.amount > 0) income += t.amount;
             else expense += t.amount;
         });
-
         const total = income + expense;
-
         document.getElementById('incomeDisplay').innerHTML = Utils.formatCurrency(income);
         document.getElementById('expenseDisplay').innerHTML = Utils.formatCurrency(expense);
         document.getElementById('display-total').innerHTML = Utils.formatCurrency(total);
         document.getElementById('display-total').style.color = total >= 0 ? "#2ecc71" : "#e74c3c";
     },
 
-    // Mostra detalhes ao clicar no mês
     showMonthDetails(monthIndex, monthName) {
         const detailsSection = document.getElementById('transaction-details');
         const detailsTitle = document.getElementById('month-title');
@@ -128,14 +106,18 @@ const App = {
                     <td>${t.description}</td>
                     <td class="${cssClass}">${Utils.formatCurrency(t.amount)}</td>
                     <td>${Utils.formatDate(t.date)}</td>
-                    <td>
-                         <span style="cursor:pointer; font-size: 1.2rem;" onclick="Transaction.remove(${originalIndex})">🗑️</span>
+                    <td style="text-align: center;">
+                         <span style="cursor:pointer; font-size: 1.2rem; color: #f75a68;" onclick="Transaction.remove(${originalIndex})">✕</span>
                     </td>
                 `;
                 detailsBody.appendChild(tr);
             });
         }
         detailsSection.scrollIntoView({ behavior: 'smooth' });
+    },
+
+    closeDetails() {
+        document.getElementById('transaction-details').style.display = "none";
     }
 }
 
@@ -149,28 +131,17 @@ const Transaction = {
         transactions.splice(index, 1);
         Storage.set(transactions);
         App.reload();
+        // Fecha detalhes para evitar erro visual de índice
+        App.closeDetails();
     }
 }
 
-// --- MODAL ---
-const Modal = {
-    open() {
-        document.querySelector('.modal-overlay').classList.add('active');
-    },
-    close(event) {
-        if(event) event.preventDefault(); // Impede recarregar se for link
-        document.querySelector('.modal-overlay').classList.remove('active');
-    }
-}
-
-// --- FORMULÁRIO ---
 const Form = {
     description: document.querySelector('input#description'),
     amount: document.querySelector('input#amount'),
     date: document.querySelector('input#date'),
 
     getValues() {
-        // Pega qual radio button está marcado
         const type = document.querySelector('input[name="type"]:checked').value;
         return {
             description: Form.description.value,
@@ -190,12 +161,7 @@ const Form = {
     formatValues() {
         let { description, amount, date, type } = Form.getValues();
         amount = Number(amount);
-
-        // Se for Despesa, transforma em negativo
-        if(type === 'expense') {
-            amount = amount * -1;
-        }
-
+        if(type === 'expense') amount = amount * -1;
         return { description, amount, date };
     },
 
@@ -212,7 +178,7 @@ const Form = {
             const transaction = Form.formatValues();
             Transaction.add(transaction);
             Form.clearFields();
-            Modal.close();
+            // Não fecha nada, apenas limpa
         } catch (error) {
             alert(error.message);
         }
@@ -221,6 +187,4 @@ const Form = {
 
 App.init();
 
-// Adiciona evento ao formulário
-const formElement = document.querySelector("#form-transaction");
-if(formElement) formElement.addEventListener("submit", Form.submit);
+document.querySelector("#form-transaction").addEventListener("submit", Form.submit);
