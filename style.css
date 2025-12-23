@@ -1,179 +1,326 @@
+/* =========================================
+   GIDEON FINANCE - DARK THEME
+   ========================================= */
 
+/* --- VARIÁVEIS DE COR E FONTE --- */
 :root {
-    --bg-color: #f0f2f5;
-    --card-bg: #ffffff;
-    --text-dark: #363f5f;
-    --green: #33cc95;
-    --red: #e92929;
-    --blue: #5429cc;
+    --background: #121214;  /* Fundo Escuro Profundo */
+    --surface: #202024;     /* Cartões e Elementos */
+    --text-body: #c4c4cc;   /* Texto Cinza Claro */
+    --text-title: #e1e1e6;  /* Texto Branco/Titulo */
+    
+    --green: #00b37e;       /* Verde Neon Suave */
+    --green-light: #00875f; 
+    --red: #f75a68;         /* Vermelho Salmão */
+    
+    --primary: #8257e5;     /* Roxo (Cor da marca Gideon) */
+    
+    --white: #ffffff;
+    --gray-600: #323238;
 }
 
+/* --- RESET GERAL --- */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html {
+    font-size: 93.75%; /* 15px - Padrão responsivo */
 }
 
 body {
-    background-color: var(--bg-color);
-    color: var(--text-dark);
+    background: var(--background);
+    color: var(--text-body);
+    font-family: 'Poppins', sans-serif; /* Fonte Moderna */
+    -webkit-font-smoothing: antialiased;
 }
 
-.container {
-    width: 90%;
-    max-width: 800px;
-    margin: 0 auto;
-    padding-bottom: 80px; /* Espaço para o FAB */
-}
-
-/* Header */
+/* --- CABEÇALHO --- */
 header {
-    background: var(--blue);
-    padding: 2rem 1rem 6rem; /* Fundo estendido */
+    background: var(--surface);
+    padding: 2rem 0 8rem; /* Espaço extra embaixo para os cards subirem */
     text-align: center;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
 }
 
-.btn-text { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
+#logo {
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+}
 
-/* Cards de Resumo */
-.summary {
+/* --- CONTAINER PRINCIPAL --- */
+.container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* --- TÍTULOS DE SEÇÃO --- */
+h2 {
+    margin-top: 3.2rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-title);
+    font-weight: 400;
+}
+
+/* --- CARDS DE RESUMO (GRID) --- */
+/* Esta seção substitui seu 'summary-grid' antigo */
+.summary-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-top: -3rem;
-    overflow-x: auto; /* Scroll horizontal no mobile se precisar */
+    gap: 2rem;
+    margin-top: -5rem; /* Sobe por cima do header */
 }
 
-.card {
-    background: var(--card-bg);
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+.kpi-card {
+    background: var(--surface);
+    padding: 1.5rem 2rem;
+    border-radius: 6px; /* Bordas arredondadas modernas */
+    color: var(--text-title);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-.card h3 { font-weight: normal; font-size: 0.9rem; margin-bottom: 0.5rem; }
-.card p { font-size: 1.5rem; font-weight: bold; }
-.card.total { background: var(--green); color: white; }
+/* Destaque para o card de Total */
+.kpi-card.total {
+    background: var(--green-light); /* Destaque verde */
+    color: var(--white);
+}
 
-/* Lista */
-.transactions { margin-top: 2rem; }
-.transactions h2 { margin-bottom: 1rem; font-size: 1.2rem; }
-#transactions-list { list-style: none; }
+.kpi-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
 
-#transactions-list li {
-    background: var(--card-bg);
-    padding: 1rem 1.5rem;
-    border-radius: 0.25rem;
-    margin-bottom: 0.5rem;
+#display-total, .kpi-value {
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 3rem;
+}
+
+/* --- LINKS E BOTÕES --- */
+a {
+    text-decoration: none;
+    color: var(--green);
+}
+
+a:hover {
+    color: var(--green-light);
+}
+
+.button.new {
+    display: inline-block;
+    margin-bottom: .8rem;
+    color: var(--green);
+    font-weight: 500;
+    transition: filter 0.2s;
+}
+
+.button.new:hover {
+    filter: brightness(1.2);
+}
+
+/* --- TABELA DE DADOS --- */
+.table-container {
+    overflow-x: auto; /* Rolagem no celular */
+}
+
+table {
+    width: 100%;
+    border-spacing: 0 0.5rem; /* Espaço entre as linhas */
+}
+
+th {
+    background: var(--gray-600); /* Cabeçalho da tabela mais escuro */
+    color: var(--text-body);
+    font-weight: 400;
+    padding: 1rem 2rem;
+    text-align: left;
+}
+
+th:first-child { border-radius: 6px 0 0 6px; }
+th:last-child { border-radius: 0 6px 6px 0; }
+
+td {
+    background: var(--surface);
+    padding: 1rem 2rem;
+    color: var(--text-body);
+}
+
+td:first-child { border-radius: 6px 0 0 6px; color: var(--text-title); }
+td:last-child { border-radius: 0 6px 6px 0; }
+
+/* Cores do Texto (Usadas pelo JS) */
+.text-green { color: var(--green) !important; }
+.text-red { color: var(--red) !important; }
+.text-right { text-align: right; }
+
+/* --- MODAL (Janela Flutuante) --- */
+.modal-overlay {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 999;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background: var(--surface);
+    padding: 2.4rem;
+    position: relative;
+    z-index: 1;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* --- FORMULÁRIO --- */
+#form h2 {
+    margin-top: 0;
+    color: var(--text-title);
+}
+
+input {
+    border: 0;
+    border-radius: 6px;
+    background: #121214; /* Input escuro */
+    color: var(--text-title);
+    padding: 1rem;
+    width: 100%;
+    margin-top: 0.8rem;
+    border: 1px solid #333;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--green);
+}
+
+.input-group small {
+    opacity: 0.4;
+    display: block;
+    margin-top: 0.5rem;
+}
+
+.input-group.actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-top: 2rem;
 }
 
-.transactions #transactions-list .empty-state {
-    background-color: transparent;
-    box-shadow: none;
+.input-group.actions .button, 
+.input-group.actions button {
+    width: 48%;
+    padding: 1rem; /* Botões gordinhos */
+    border-radius: 6px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
     text-align: center;
-    padding: 2rem;
-    color: #999;
-}
-
-.transaction-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.transaction-info .description {
     font-size: 1rem;
-    font-weight: 500;
 }
 
-.transaction-info .date {
-    font-size: 0.8rem;
-    color: #999;
-    margin-top: 0.2rem;
-}
-
-.transaction-values {
+/* Botão Cancelar */
+.button.cancel {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
     display: flex;
     align-items: center;
+    justify-content: center;
+    transition: 0.2s;
 }
 
-.transaction-values .income {
-    color: var(--green);
-    font-weight: bold;
+.button.cancel:hover {
+    background: rgba(247, 90, 104, 0.1);
 }
 
-.transaction-values .expense {
-    color: var(--red);
-    font-weight: bold;
+/* Botão Salvar */
+button[type="submit"] {
+    background: var(--green);
+    color: var(--white);
+    transition: background 0.2s;
 }
 
-.remove-icon {
-    opacity: 0.6;
-    transition: opacity 0.2s;
+button[type="submit"]:hover {
+    background: var(--green-light);
 }
 
-.remove-icon:hover {
-    opacity: 1;
+/* --- RESPONSIVIDADE (Celular) --- */
+@media (max-width: 800px) {
+    html { font-size: 87.5%; } /* Diminui a fonte */
+
+    .summary-grid {
+        grid-template-columns: 1fr; /* Um card por linha */
+        gap: 1rem;
+    }
 }
-
-
-/* FAB - Floating Action Button */
-.fab {
+/* --- BOTÃO FLUTUANTE (FAB) --- */
+.button.float {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
     background: var(--green);
-    color: white;
-    font-size: 2rem;
-    border: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    cursor: pointer;
+    color: var(--white);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    z-index: 100; /* Fica acima de tudo */
+    transition: transform 0.2s, background 0.2s;
 }
 
-/* Modal */
+.button.float:hover {
+    background: var(--green-light);
+    transform: scale(1.1); /* Efeito de crescer um pouco */
+}
+
+/* --- GARANTIA DO MODAL ESCONDIDO --- */
+/* Verifique se esta parte está exatamente assim no seu código */
 .modal-overlay {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
+    top: 0;
+    left: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    
+    /* O SEGREDO ESTÁ AQUI: */
+    opacity: 0;
+    visibility: hidden; 
     z-index: 999;
 }
-.hidden { display: none; }
 
-.modal {
-    background: white;
-    padding: 2rem;
-    border-radius: 0.5rem;
-    width: 90%;
-    max-width: 500px;
-}
-.modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; }
-.close { cursor: pointer; font-size: 1.5rem; }
-
-.input-group { margin-bottom: 1rem; }
-.input-group input { width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 0.25rem; }
-
-.btn-primary { width: 100%; padding: 1rem; background: var(--green); color: white; border: none; border-radius: 0.25rem; font-size: 1rem; cursor: pointer; }
-.btn-secondary { display: block; width: 100%; padding: 0.8rem; margin-bottom: 0.5rem; background: #ddd; border: none; text-align: center; cursor: pointer; border-radius: 0.25rem; }
-.btn-danger { width: 100%; padding: 0.8rem; background: var(--red); color: white; border: none; border-radius: 0.25rem; cursor: pointer; }
-
-/* Responsivo */
-@media (max-width: 600px) {
-    .summary { grid-template-columns: 1fr; } /* Cards empilhados no mobile */
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
