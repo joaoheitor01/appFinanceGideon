@@ -1,10 +1,12 @@
 const Storage = {
-    get() { return JSON.parse(localStorage.getItem("gideon.finances:v3")) || []; },
-    set(transactions) { localStorage.setItem("gideon.finances:v3", JSON.stringify(transactions)); }
+    get() { return JSON.parse(localStorage.getItem("gideon.finances:v4")) || []; }, // Mudei para v4 para limpar dados velhos incompatíveis
+    set(transactions) { localStorage.setItem("gideon.finances:v4", JSON.stringify(transactions)); }
 }
 
+// Dados de exemplo com Categoria
 const initialData = [
-    { description: "Salário Teste", amount: 2000, date: "2025-10-30" }
+    { description: "Salário", amount: 2000, date: "2025-10-30", category: "Salário" },
+    { description: "Mercado", amount: -450, date: "2025-10-30", category: "Alimentação" }
 ];
 
 let transactions = Storage.get();
@@ -96,15 +98,18 @@ const App = {
         detailsBody.innerHTML = "";
 
         if(filtered.length === 0) {
-            detailsBody.innerHTML = `<tr><td colspan="4" style="text-align:center">Sem movimentos.</td></tr>`;
+            detailsBody.innerHTML = `<tr><td colspan="5" style="text-align:center">Sem movimentos.</td></tr>`;
         } else {
             filtered.forEach(t => {
                 const originalIndex = transactions.indexOf(t);
                 const tr = document.createElement('tr');
                 const cssClass = t.amount > 0 ? "text-green" : "text-red";
+                // Exibe a categoria ou "Geral" se não tiver
+                const category = t.category ? t.category : "Geral";
+
                 tr.innerHTML = `
                     <td>${t.description}</td>
-                    <td class="${cssClass}">${Utils.formatCurrency(t.amount)}</td>
+                    <td style="color: #bbb; font-size: 0.9rem;">${category}</td> <td class="${cssClass}">${Utils.formatCurrency(t.amount)}</td>
                     <td>${Utils.formatDate(t.date)}</td>
                     <td style="text-align: center;">
                          <span style="cursor:pointer; font-size: 1.2rem; color: #f75a68;" onclick="Transaction.remove(${originalIndex})">✕</span>
@@ -131,7 +136,6 @@ const Transaction = {
         transactions.splice(index, 1);
         Storage.set(transactions);
         App.reload();
-        // Fecha detalhes para evitar erro visual de índice
         App.closeDetails();
     }
 }
@@ -140,6 +144,7 @@ const Form = {
     description: document.querySelector('input#description'),
     amount: document.querySelector('input#amount'),
     date: document.querySelector('input#date'),
+    category: document.querySelector('select#category'), // Pegando o Select
 
     getValues() {
         const type = document.querySelector('input[name="type"]:checked').value;
@@ -147,28 +152,31 @@ const Form = {
             description: Form.description.value,
             amount: Form.amount.value,
             date: Form.date.value,
+            category: Form.category.value, // Captura o valor da categoria
             type: type
         }
     },
 
     validateFields() {
-        const { description, amount, date } = Form.getValues();
-        if(description.trim() === "" || amount.trim() === "" || date.trim() === "") {
-            throw new Error("Por favor, preencha todos os campos");
+        const { description, amount, date, category } = Form.getValues();
+        // Agora valida também se escolheu categoria
+        if(description.trim() === "" || amount.trim() === "" || date.trim() === "" || category === "") {
+            throw new Error("Por favor, preencha todos os campos e a categoria");
         }
     },
 
     formatValues() {
-        let { description, amount, date, type } = Form.getValues();
+        let { description, amount, date, category, type } = Form.getValues();
         amount = Number(amount);
         if(type === 'expense') amount = amount * -1;
-        return { description, amount, date };
+        return { description, amount, date, category };
     },
 
     clearFields() {
         Form.description.value = "";
         Form.amount.value = "";
         Form.date.value = "";
+        Form.category.selectedIndex = 0; // Reseta o select
     },
 
     submit(event) {
@@ -178,7 +186,6 @@ const Form = {
             const transaction = Form.formatValues();
             Transaction.add(transaction);
             Form.clearFields();
-            // Não fecha nada, apenas limpa
         } catch (error) {
             alert(error.message);
         }
@@ -186,5 +193,4 @@ const Form = {
 }
 
 App.init();
-
 document.querySelector("#form-transaction").addEventListener("submit", Form.submit);
