@@ -1,57 +1,90 @@
-# ⚡ Gideon Finance
+# 💰 Gideon Finance
 
-> "A inteligência financeira que você precisa."
+**Gideon Finance** é um sistema web para **controle financeiro pessoal**, desenvolvido com foco em simplicidade, clareza visual e organização de entradas e saídas.
 
-O **Gideon Finance** é uma aplicação web de controle financeiro pessoal, focada em simplicidade e eficiência. O sistema permite o registro de entradas e saídas, cálculo automático de saldo e persistência de dados localmente.
+O projeto oferece uma interface direta para acompanhar movimentações financeiras, visualizar saldo total e manter um histórico de transações, servindo como base para futuras evoluções com backend e recursos avançados de segurança.
 
-## 🚀 Tecnologias
-
-Este projeto foi desenvolvido utilizando as tecnologias fundamentais da Web:
-
-- **HTML5** (Estrutura Semântica)
-- **CSS3** (Estilização com Variáveis, Flexbox e Grid Layout)
-- **JavaScript (ES6+)** (Lógica de DOM, Arrays e LocalStorage)
-
-## ✨ Funcionalidades
-
-- **Dark Mode:** Interface moderna e confortável visualmente (Tema Gideon).
-- **Cálculo Automático:** O saldo total é atualizado em tempo real conforme as transações são adicionadas.
-- **LocalStorage:** As transações ficam salvas no navegador do usuário. Você pode fechar a aba e voltar depois que os dados estarão lá.
-- **Responsividade:** Layout adaptável para Desktop e Mobile.
-- **Modal Interativo:** Adição de transações através de janela flutuante.
-
-## 📱 Como usar
-
-1. Clique no botão flutuante **+** para adicionar uma nova transação.
-2. Insira a descrição (ex: "Salário"), o valor e a data.
-   - Use valores negativos (ex: `-50`) para despesas.
-   - Use valores positivos (ex: `1000`) para receitas.
-3. O sistema atualizará o resumo mensal e o saldo total automaticamente.
-
----
-Desenvolvido por **João Heitor** ```
-
-3.  Salve o arquivo.
-4.  Faça o envio para o GitHub:
-    ```powershell
-    git add README.md
-    git commit -m "Docs: Adicionado README do projeto"
-    git push origin main
-    ```
+🔗 Deploy: https://app-finance-gideon.vercel.app/
 
 ---
 
-### Passo 3: Acessar como Aplicativo no Celular 📱
-Agora que o site está online pelo GitHub Pages, você pode instalá-lo.
+## 🎯 Objetivo do Projeto
 
-1.  Pegue o link que apareceu lá nas configurações do GitHub (algo como `https://joaoheitor01.github.io/appFinanceGideon/`).
-2.  Envie esse link para o seu WhatsApp ou abra no navegador do seu celular (Chrome ou Safari).
-3.  **Para instalar:**
-    * **No Android (Chrome):** Toque nos três pontinhos no canto superior > Selecione **"Adicionar à Tela Inicial"** (ou "Instalar App").
-    * **No iPhone (Safari):** Toque no botão de compartilhar (quadrado com seta pra cima) > Role para baixo e toque em **"Adicionar à Tela de Início"**.
+Criar uma aplicação web leve e funcional que permita ao usuário:
 
-Agora você terá um ícone do **Gideon Finance** ao lado dos seus outros apps!
+- Organizar receitas e despesas
+- Visualizar o saldo financeiro em tempo real
+- Manter histórico de movimentações
+- Ter uma experiência simples, rápida e intuitiva
+
+O sistema foi pensado como **MVP**, com estrutura preparada para expansão futura.
 
 ---
 
-**O link do GitHub Pages já está funcionando para você? Se sim, me mande ele aqui para eu confirmar se está tudo certo!**
+## 🖥️ Funcionalidades
+
+- 🔐 Interface de login
+- 📊 Dashboard financeiro
+- ➕ Cadastro de entradas e saídas
+- 📅 Histórico de transações em tabela
+- ❌ Remoção de registros
+- 📱 Interface responsiva (desktop e mobile)
+
+---
+
+## 🧱 Tecnologias Utilizadas
+
+- **HTML5** – Estrutura da aplicação  
+- **CSS3** – Estilização e layout  
+- **JavaScript** – Lógica e manipulação de dados  
+- **Vercel** – Deploy da aplicação  
+
+---
+
+## 🧠 Estrutura do Sistema
+
+O projeto é composto por um front-end estático que gerencia dados no navegador, sendo ideal para:
+
+- Estudos de lógica em JavaScript
+- Projetos acadêmicos
+- Prototipação de sistemas financeiros
+- Base para integração com APIs e banco de dados
+
+---
+
+## 🔒 Considerações de Segurança (Planejamento)
+
+Como evolução futura, o projeto prevê:
+
+- Autenticação segura (JWT)
+- Criptografia de dados sensíveis
+- Validação e sanitização de inputs
+- Controle de sessão
+- Integração com backend seguro
+
+---
+
+## 🚀 Possíveis Evoluções
+
+- 📊 Gráficos financeiros (mensal/anual)
+- 📁 Integração com banco de dados
+- 🧾 Exportação de relatórios (PDF / CSV)
+- 🌙 Modo escuro
+- 👥 Sistema de usuários
+- 🔔 Notificações e alertas financeiros
+
+---
+
+## 📌 Status do Projeto
+
+🟡 **Em desenvolvimento / MVP funcional**
+
+---
+
+## 👤 Autor
+
+**João Heitor**  
+Estudante de Engenharia da Computação  
+Técnico / Operador de Áudio  
+
+📌 GitHub: https://github.com/joaoheitor01
