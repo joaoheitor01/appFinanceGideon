@@ -1,37 +1,37 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { supabase } from './services/supabase';
+import Login from './components/Login';     // <--- Importamos o novo Login
 import SignUp from './components/SignUp';
 import Dashboard from './components/Dashboard';
+import './App.css'; // Garanta que o CSS está sendo importado
 
 export default function App() {
   const [session, setSession] = useState(null);
-  const [userPlan, setUserPlan] = useState('free'); // <--- NOVO ESTADO (padrão 'free')
-  const [loading, setLoading] = useState(false);
-
-  // ... (seus estados de email/password continuam aqui)
+  const [userPlan, setUserPlan] = useState('free');
+  const [view, setView] = useState('login'); // <--- Controla: 'login' ou 'signup'
 
   useEffect(() => {
-    // Verifica sessão inicial
+    // 1. Verificar sessão ativa
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (session) fetchUserPlan(session.user.id); // <--- BUSCAR PLANO
+      if (session) fetchUserPlan(session.user.id);
     });
 
-    // Escuta mudanças na autenticação (login/logout)
+    // 2. Escutar mudanças de login/logout
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (session) {
-        fetchUserPlan(session.user.id); // <--- BUSCAR PLANO AO LOGAR
+        fetchUserPlan(session.user.id);
       } else {
-        setUserPlan('free'); // Reseta para free se deslogar
+        setUserPlan('free');
+        setView('login'); // Volta pro login ao sair
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  // --- NOVA FUNÇÃO PARA BUSCAR O PLANO ---
   const fetchUserPlan = async (userId) => {
     try {
       const { data, error } = await supabase
@@ -40,27 +40,24 @@ export default function App() {
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
-      
-      if (data) {
-        setUserPlan(data.plan);
-        console.log('Plano do usuário:', data.plan);
-      }
+      if (data) setUserPlan(data.plan);
     } catch (error) {
-      console.error('Erro ao buscar plano:', error.message);
+      console.log('Usuário sem plano definido ou erro de conexão.');
     }
   };
 
-  // ... (sua função handleLogin continua aqui)
+  // Se tem sessão, mostra o DASHBOARD
+  if (session) {
+    return <Dashboard session={session} userPlan={userPlan} />;
+  }
 
+  // Se NÃO tem sessão, mostra Login ou SignUp
   return (
-    <div className="container">
-      {!session ? (
-        <SignUp /> 
-        // Note: passe as props de login para o SignUp se necessário
+    <div className="auth-wrapper">
+      {view === 'login' ? (
+        <Login onToggleView={() => setView('signup')} />
       ) : (
-        // AQUI ESTÁ O SEGREDO: Passamos o userPlan para o Dashboard
-        <Dashboard key={session.user.id} session={session} userPlan={userPlan} />
+        <SignUp onToggleView={() => setView('login')} />
       )}
     </div>
   );

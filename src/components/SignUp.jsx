@@ -1,16 +1,17 @@
+// src/components/SignUp.jsx
 import React, { useState } from 'react';
 import { supabase } from '../services/supabase';
 
-export default function SignUp({ onNavigateLogin }) {
-  const [loading, setLoading] = useState(false);
+export default function SignUp({ onToggleView }) {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
     birthDate: '',
     gender: '',
-    usageType: ''
+    usage: ''
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,83 +22,72 @@ export default function SignUp({ onNavigateLogin }) {
     setLoading(true);
 
     try {
-      // 1. Criar usuário na autenticação
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
-      });
-
-      if (authError) throw authError;
-
-      // 2. Salvar dados extras na tabela 'profiles'
-      if (authData.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([{
-            id: authData.user.id,
+        options: {
+          data: {
             full_name: formData.fullName,
             birth_date: formData.birthDate,
             gender: formData.gender,
-            usage_type: formData.usageType
-          }]);
+            usage_type: formData.usage
+          }
+        }
+      });
 
-        if (profileError) throw profileError;
-        
-        alert('Conta criada com sucesso! Faça login.');
-        onNavigateLogin();
-      }
+      if (error) throw error;
+      alert('Cadastro realizado! Verifique seu e-mail para confirmar.');
+      onToggleView(); // Vai para a tela de login
     } catch (error) {
-      alert('Erro: ' + error.message);
+      alert(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div id="login-screen">
-      <div className="login-card" style={{maxWidth: '450px'}}>
+    <div className="signup-container">
+      <div className="card">
         <h2>Criar Conta</h2>
         <p>Preencha seus dados para começar.</p>
         
         <form onSubmit={handleSignUp}>
-          <div className="input-container">
-            <input type="text" name="fullName" placeholder="Nome Completo" onChange={handleChange} required />
-          </div>
-          <div className="input-container">
-            <input type="email" name="email" placeholder="E-mail" onChange={handleChange} required />
-          </div>
-          <div className="input-container">
-            <input type="password" name="password" placeholder="Senha" onChange={handleChange} required />
+          <input name="fullName" placeholder="Nome Completo" onChange={handleChange} required />
+          <input name="email" type="email" placeholder="E-mail" onChange={handleChange} required />
+          <input name="password" type="password" placeholder="Senha" onChange={handleChange} required />
+          
+          <div className="row">
+            <input name="birthDate" type="date" onChange={handleChange} required />
           </div>
           
-          <div className="input-container">
-             <label style={{display:'block', textAlign:'left', color:'#aaa', fontSize:'12px', marginLeft:'15px'}}>Nascimento</label>
-             <input type="date" name="birthDate" onChange={handleChange} required />
-          </div>
-
-          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'1rem'}}>
-            <select name="gender" onChange={handleChange} required style={{borderRadius:'25px', height:'3.5rem', padding:'0 1rem', border:'none'}}>
+          <div className="row">
+            <select name="gender" onChange={handleChange} required>
               <option value="">Gênero</option>
               <option value="Masculino">Masculino</option>
               <option value="Feminino">Feminino</option>
               <option value="Outro">Outro</option>
             </select>
-            <select name="usageType" onChange={handleChange} required style={{borderRadius:'25px', height:'3.5rem', padding:'0 1rem', border:'none'}}>
+            <select name="usage" onChange={handleChange} required>
               <option value="">Uso</option>
               <option value="Pessoal">Pessoal</option>
               <option value="Empresarial">Empresarial</option>
             </select>
           </div>
 
-          <button type="submit" disabled={loading}>
-             {loading ? 'Criando...' : 'CADASTRAR'}
+          <button type="submit" disabled={loading} className="btn-primary">
+            {loading ? 'CADASTRANDO...' : 'CADASTRAR'}
           </button>
         </form>
 
-        <div className="login-footer">
-          <span>Já tem conta? </span>
-          <a href="#" onClick={(e) => { e.preventDefault(); onNavigateLogin(); }}>Fazer Login</a>
-        </div>
+        <p style={{ marginTop: '20px', fontSize: '0.9rem' }}>
+          Já tem conta?{' '}
+          <span 
+            onClick={onToggleView} 
+            style={{ color: '#007bff', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            Fazer Login
+          </span>
+        </p>
       </div>
     </div>
   );
