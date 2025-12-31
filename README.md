@@ -1,90 +1,16 @@
-# 💰 Gideon Finance
+# React + Vite
 
-**Gideon Finance** é um sistema web para **controle financeiro pessoal**, desenvolvido com foco em simplicidade, clareza visual e organização de entradas e saídas.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-O projeto oferece uma interface direta para acompanhar movimentações financeiras, visualizar saldo total e manter um histórico de transações, servindo como base para futuras evoluções com backend e recursos avançados de segurança.
+Currently, two official plugins are available:
 
-🔗 Deploy: https://app-finance-gideon.vercel.app/
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
----
+## React Compiler
 
-## 🎯 Objetivo do Projeto
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-Criar uma aplicação web leve e funcional que permita ao usuário:
+## Expanding the ESLint configuration
 
-- Organizar receitas e despesas
-- Visualizar o saldo financeiro em tempo real
-- Manter histórico de movimentações
-- Ter uma experiência simples, rápida e intuitiva
-
-O sistema foi pensado como **MVP**, com estrutura preparada para expansão futura.
-
----
-
-## 🖥️ Funcionalidades
-
-- 🔐 Interface de login
-- 📊 Dashboard financeiro
-- ➕ Cadastro de entradas e saídas
-- 📅 Histórico de transações em tabela
-- ❌ Remoção de registros
-- 📱 Interface responsiva (desktop e mobile)
-
----
-
-## 🧱 Tecnologias Utilizadas
-
-- **HTML5** – Estrutura da aplicação  
-- **CSS3** – Estilização e layout  
-- **JavaScript** – Lógica e manipulação de dados  
-- **Vercel** – Deploy da aplicação  
-
----
-
-## 🧠 Estrutura do Sistema
-
-O projeto é composto por um front-end estático que gerencia dados no navegador, sendo ideal para:
-
-- Estudos de lógica em JavaScript
-- Projetos acadêmicos
-- Prototipação de sistemas financeiros
-- Base para integração com APIs e banco de dados
-
----
-
-## 🔒 Considerações de Segurança (Planejamento)
-
-Como evolução futura, o projeto prevê:
-
-- Autenticação segura (JWT)
-- Criptografia de dados sensíveis
-- Validação e sanitização de inputs
-- Controle de sessão
-- Integração com backend seguro
-
----
-
-## 🚀 Possíveis Evoluções
-
-- 📊 Gráficos financeiros (mensal/anual)
-- 📁 Integração com banco de dados
-- 🧾 Exportação de relatórios (PDF / CSV)
-- 🌙 Modo escuro
-- 👥 Sistema de usuários
-- 🔔 Notificações e alertas financeiros
-
----
-
-## 📌 Status do Projeto
-
-🟡 **Em desenvolvimento / MVP funcional**
-
----
-
-## 👤 Autor
-
-**João Heitor**  
-Estudante de Engenharia da Computação  
-Técnico / Operador de Áudio  
-
-📌 GitHub: https://github.com/joaoheitor01
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
