@@ -113,3 +113,22 @@ tr.month-row.active { background: rgba(255,255,255,0.1); border-left: 3px solid 
   .form-row { grid-template-columns: 1fr; }
   .tables-grid { grid-template-columns: 1fr; }
 }
+/* App.css ou index.css */
+
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  /* Outras cores padrão */
+}
+
+/* Quando o body tiver a classe .dark-mode, as variáveis mudam */
+body.dark-mode {
+  --bg-color: #1a1a1a;
+  --text-color: #f0f0f0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: all 0.3s ease; /* Suaviza a troca */
+}

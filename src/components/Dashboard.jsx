@@ -1,222 +1,104 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 
-export default function Dashboard({ session }) {
-  const [transactions, setTransactions] = useState([]);
-  const [selectedMonthIndex, setSelectedMonthIndex] = useState(null);
-  const [selectedMonthName, setSelectedMonthName] = useState('');
+// Recebemos 'session' e 'userPlan' vindos do App.jsx
+export default function Dashboard({ session, userPlan }) {
+  const [darkMode, setDarkMode] = useState(false);
 
-  // Estados do Formulário
-  const [desc, setDesc] = useState('');
-  const [amountString, setAmountString] = useState('');
-  const [amountValue, setAmountValue] = useState(0);
-  const [category, setCategory] = useState('Alimentação');
-  const [isExpense, setIsExpense] = useState(true);
+  // Efeito 1: Carregar preferência salva ao iniciar
+  useEffect(() => {
+    // Só aplica o tema escuro se o usuário tiver salvo ISSO E for Supporter
+    const savedTheme = localStorage.getItem('gideon_theme');
+    
+    if (savedTheme === 'dark' && userPlan === 'supporter') {
+      setDarkMode(true);
+      document.body.classList.add('dark-mode');
+    } else {
+      // Garante que comece limpo caso contrário
+      document.body.classList.remove('dark-mode');
+    }
+  }, [userPlan]); // Se o plano mudar (upgrade em tempo real), ele reavalia
 
-  // Lista de Categorias
-  const [categories, setCategories] = useState([
-    "Alimentação", "Moradia", "Transporte", "Lazer", "Salário", "Outros"
-  ]);
-
-  const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-
-  useEffect(() => { 
-      fetchTransactions(); 
-      loadCategories(); 
-  }, []);
-
-  const fetchTransactions = async () => {
-    const { data } = await supabase.from('transactions').select('*').order('date', { ascending: false });
-    if (data) setTransactions(data);
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
   };
 
-  const loadCategories = () => {
-      const stored = localStorage.getItem("gideon.categories");
-      if (stored) {
-          setCategories(JSON.parse(stored));
-      }
-  };
+  const toggleDarkMode = () => {
+    // 1. Bloqueio de Segurança: Se não for supporter, para aqui.
+    if (userPlan !== 'supporter') {
+      alert("🔒 Recurso exclusivo para Apoiadores! \n\nTorne-se um Apoiador para desbloquear o Modo Escuro e ajudar a manter o Gideon Finance.");
+      return;
+    }
 
-  const handleAddCategory = () => {
-      const newCat = prompt("Nova categoria:");
-      if (newCat && newCat.trim() !== "") {
-          const newList = [...categories, newCat];
-          setCategories(newList);
-          setCategory(newCat);
-          localStorage.setItem("gideon.categories", JSON.stringify(newList));
-      }
-  };
+    // 2. Lógica de troca de tema (só executa se for supporter)
+    const newMode = !darkMode;
+    setDarkMode(newMode);
 
-  const handleAmountChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-    const numericValue = Number(value) / 100;
-    setAmountValue(numericValue);
-    setAmountString(numericValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
-  };
-
-  const handleAdd = async (e) => {
-    e.preventDefault();
-    if (!desc || !amountValue) return;
-
-    const finalAmount = isExpense ? -Math.abs(amountValue) : Math.abs(amountValue);
-
-    const { error } = await supabase.from('transactions').insert([{
-      user_id: session.user.id,
-      description: desc,
-      amount: finalAmount,
-      category,
-      type: isExpense ? 'expense' : 'income',
-      date: new Date().toISOString()
-    }]);
-
-    if (!error) {
-      setDesc(''); setAmountString(''); setAmountValue(0);
-      fetchTransactions();
+    if (newMode) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('gideon_theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('gideon_theme', 'light');
     }
   };
-
-  const handleDelete = async (id) => {
-    if(confirm("Excluir transação?")) {
-        await supabase.from('transactions').delete().eq('id', id);
-        fetchTransactions();
-    }
-  };
-
-  const formatMoney = (val) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  
-  const getMonthIndexFromDate = (dateStr) => {
-      const date = new Date(dateStr);
-      return new Date(date.valueOf() + date.getTimezoneOffset() * 60000).getMonth();
-  };
-
-  // Cálculos
-  const summaryData = months.map((name, index) => {
-      const monthTrans = transactions.filter(t => getMonthIndexFromDate(t.date) === index);
-      const income = monthTrans.filter(t => t.amount > 0).reduce((acc, t) => acc + t.amount, 0);
-      const expense = monthTrans.filter(t => t.amount < 0).reduce((acc, t) => acc + t.amount, 0);
-      return { name, index, income, expense, balance: income + expense, hasData: monthTrans.length > 0 };
-  });
-
-  const totalIncome = transactions.filter(t => t.amount > 0).reduce((acc, t) => acc + t.amount, 0);
-  const totalExpense = transactions.filter(t => t.amount < 0).reduce((acc, t) => acc + t.amount, 0);
-
-  const details = selectedMonthIndex !== null 
-    ? transactions.filter(t => getMonthIndexFromDate(t.date) === selectedMonthIndex)
-    : [];
 
   return (
-    <div className="container">
-      <header>
-        <div className="header-title">Gideon Finance</div>
-        <div className="user-area">
-            <span>{session.user.email}</span>
-            <button onClick={() => supabase.auth.signOut()} className="btn-logout">Sair</button>
+    <div className="dashboard-wrapper">
+      <header style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        padding: '20px',
+        borderBottom: '1px solid #ccc'
+      }}>
+        <div>
+          <h2>Olá, {session.user.user_metadata.full_name || session.user.email}</h2>
+          <p>
+            Status do Plano: 
+            {/* Badge visual do plano */}
+            <span style={{ 
+              backgroundColor: userPlan === 'supporter' ? '#ffd700' : '#e0e0e0',
+              color: userPlan === 'supporter' ? '#000' : '#333',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              marginLeft: '8px',
+              fontWeight: 'bold',
+              fontSize: '0.8rem'
+            }}>
+              {userPlan === 'supporter' ? '🌟 APOIADOR' : 'FREE'}
+            </span>
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px' }}>
+          {/* BOTÃO MODO ESCURO */}
+          <button 
+            onClick={toggleDarkMode}
+            style={{
+              cursor: userPlan === 'supporter' ? 'pointer' : 'not-allowed',
+              opacity: userPlan === 'supporter' ? 1 : 0.6,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}
+            title={userPlan === 'supporter' ? "Alternar tema" : "Bloqueado no plano Free"}
+          >
+            {darkMode ? '☀️ Claro' : '🌙 Escuro'}
+            {userPlan !== 'supporter' && '🔒'} 
+          </button>
+
+          <button onClick={handleLogout}>Sair</button>
         </div>
       </header>
 
-      <section className="summary-grid">
-        <div className="card"><header><span>Entradas</span></header><h3 className="text-green">{formatMoney(totalIncome)}</h3></div>
-        <div className="card"><header><span>Saídas</span></header><h3 className="text-red">{formatMoney(totalExpense)}</h3></div>
-        <div className="card"><header><span>Total</span></header><h3 style={{color: (totalIncome + totalExpense) >= 0 ? '#fff' : '#ef4444'}}>{formatMoney(totalIncome + totalExpense)}</h3></div>
-      </section>
-
-      <section className="form-section">
-        <form onSubmit={handleAdd} className="form-row">
-            <div><input type="text" placeholder="Descrição" value={desc} onChange={e => setDesc(e.target.value)} required /></div>
-            <div><input type="text" placeholder="R$ 0,00" value={amountString} onChange={handleAmountChange} required /></div>
-            
-            <div style={{display:'flex', gap:'0.5rem'}}>
-                <select value={category} onChange={e => setCategory(e.target.value)}>
-                    {categories.map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                </select>
-                <button 
-                    type="button" 
-                    onClick={handleAddCategory}
-                    style={{
-                        background: '#333', 
-                        color: '#fff', 
-                        border: 'none', 
-                        borderRadius: '8px', 
-                        width: '3rem', 
-                        fontSize: '1.2rem', 
-                        cursor: 'pointer'
-                    }}
-                    title="Nova Categoria"
-                >
-                    +
-                </button>
-            </div>
-
-            <div className="toggle-wrapper">
-                <span style={{color: isExpense ? '#718096' : '#10b981', fontSize:'0.9rem', fontWeight:'600'}}>Entrada</span>
-                <label className="switch">
-                    <input type="checkbox" checked={isExpense} onChange={() => setIsExpense(!isExpense)} />
-                    <span className="slider"></span>
-                </label>
-                <span style={{color: isExpense ? '#ef4444' : '#718096', fontSize:'0.9rem', fontWeight:'600'}}>Saída</span>
-            </div>
-
-            <button type="submit" className="btn-submit">ADICIONAR</button>
-        </form>
-      </section>
-
-      <div className="tables-grid">
-        
-        <section className="table-card">
-            <h2>Resumo por Mês</h2>
-            <div style={{overflowX: 'auto'}}>
-                <table>
-                    <thead><tr><th>Mês</th><th className="text-right">Entradas</th><th className="text-right">Saídas</th><th className="text-right">Saldo</th></tr></thead>
-                    <tbody>
-                        {summaryData.map((m) => (
-                            <tr key={m.name} 
-                                className={`month-row ${selectedMonthIndex === m.index ? 'active' : ''}`}
-                                onClick={() => { setSelectedMonthIndex(m.index); setSelectedMonthName(m.name); }}
-                                style={{ opacity: m.hasData ? 1 : 0.4 }}
-                            >
-                                <td>{m.name}</td>
-                                <td className="text-right text-green">{formatMoney(m.income)}</td>
-                                <td className="text-right text-red">{formatMoney(m.expense)}</td>
-                                <td className={`text-right ${m.balance >= 0 ? 'text-green' : 'text-red'}`}><strong>{formatMoney(m.balance)}</strong></td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section className="table-card" style={{ display: selectedMonthIndex !== null ? 'block' : 'none' }}>
-            <div style={{display:'flex', justifyContent:'space-between'}}>
-                <h2>Extrato de {selectedMonthName}</h2>
-                <button onClick={() => setSelectedMonthIndex(null)} style={{background:'none', border:'none', color:'#aaa', cursor:'pointer'}}>✕</button>
-            </div>
-            <table>
-                <thead><tr><th>Desc</th><th>Valor</th><th>Data</th><th></th></tr></thead>
-                <tbody>
-                    {details.length === 0 ? (
-                        <tr><td colSpan="4" style={{textAlign:'center', padding:'2rem', color:'#555'}}>Vazio</td></tr>
-                    ) : (
-                        details.map(t => (
-                            <tr key={t.id}>
-                                <td>
-                                    <div style={{fontWeight:'500'}}>{t.description}</div>
-                                    <div style={{fontSize:'0.8rem', color:'#718096'}}>{t.category}</div>
-                                </td>
-                                <td className={t.amount > 0 ? 'text-green' : 'text-red'}>{formatMoney(t.amount)}</td>
-                                <td>{new Date(t.date).toLocaleDateString('pt-BR')}</td>
-                                <td style={{textAlign:'right'}}>
-                                    <button onClick={() => handleDelete(t.id)} style={{background:'none', border:'none', color:'#ef4444', cursor:'pointer'}}>🗑️</button>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
-        </section>
-
-      </div>
+      <main style={{ padding: '20px' }}>
+        {/* Seus componentes de transação, gráficos, etc entram aqui */}
+        <div className="content-card">
+          <h3>Resumo Financeiro</h3>
+          <p>Seus dados carregados aqui...</p>
+        </div>
+      </main>
     </div>
   );
 }
