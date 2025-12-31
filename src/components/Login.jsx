@@ -27,8 +27,8 @@ export default function Login({ onToggleView }) {
   return (
     <div className="login-container">
       <div className="card">
-        <h2>Entrar no Gideon</h2>
-        <p>Bem-vindo de volta, Capitão.</p>
+        <h2>Entrar na Gideon Finance</h2>
+        <p>Bem-vindo de volta </p>
         
         <form onSubmit={handleLogin}>
           <input
@@ -47,7 +47,7 @@ export default function Login({ onToggleView }) {
           />
           
           <button type="submit" disabled={loading} className="btn-primary">
-            {loading ? 'Entrando...' : 'ACESSAR SISTEMA'}
+            {loading ? 'Entrando...' : 'ACESSAR CONTA'}
           </button>
         </form>
 
