@@ -139,16 +139,25 @@ export default function Dashboard({ session, userPlan }) {
         {/* CARDS */}
         <section className="summary-grid">
           <div className="card">
-            <header><span>Entradas</span></header>
+            <header>
+              <span>Entradas</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+            </header>
             <h3 className="text-green">{income.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h3>
           </div>
           <div className="card">
-            <header><span>Saídas</span></header>
+            <header>
+              <span>Saídas</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+            </header>
             <h3 className="text-red">{expense.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</h3>
           </div>
           <div className="card total">
-            <header><span>Saldo Total</span></header>
-            <h3 style={{ color: total >= 0 ? '#10b981' : '#ef4444' }}>
+            <header>
+              <span>Saldo Total</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f4f4f5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </header>
+            <h3 className={total >= 0 ? 'text-green' : 'text-red'}>
               {total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </h3>
           </div>
