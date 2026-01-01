@@ -1,76 +1,116 @@
+// src/components/Dashboard.jsx
 import React, { useState } from 'react';
 import { supabase } from '../services/supabase';
 
 export default function Dashboard({ session, userPlan }) {
-  const [showModal, setShowModal] = useState(false); // Controla se a janela de planos está aberta
+  const [showModal, setShowModal] = useState(false);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
+  // Dados fictícios para o layout aparecer (depois ligamos no banco)
+  const income = 0;
+  const expense = 0;
+  const total = 0;
 
   return (
     <div className="dashboard-container">
-      {/* --- CABEÇALHO --- */}
-      <header className="app-header">
-        <div className="header-left">
-          <h2>Olá, {session.user.email}</h2>
-          <span className={`plan-badge ${userPlan}`}>
-            {userPlan === 'supporter' ? '🌟 APOIADOR' : 'FREE'}
-          </span>
-        </div>
-
-        <div className="header-right">
-          {/* BOTÃO PLANOS (NOVO) */}
-          <button className="btn-plans" onClick={() => setShowModal(true)}>
-            💎 Planos
-          </button>
-
-          <button className="btn-logout" onClick={handleLogout}>
-            Sair
-          </button>
+      {/* --- HEADER --- */}
+      <header>
+        <div className="container header-content">
+          <div id="logo">gideon</div>
+          
+          <div className="user-area">
+            {/* BOTÃO PLANOS NOVO */}
+            <button className="btn-plans" onClick={() => setShowModal(true)}>
+               💎 Planos
+            </button>
+            
+            <span id="user-email">{session.user.email}</span>
+            <button className="btn-logout" onClick={() => supabase.auth.signOut()}>Sair</button>
+          </div>
         </div>
       </header>
 
-      {/* --- CONTEÚDO DO SITE (MANTIDO) --- */}
-      <main className="content-area">
-        <h3>Resumo Financeiro</h3>
-        <p className="placeholder-text">Seus dados financeiros aparecerão aqui...</p>
-        {/* Aqui entrarão seus gráficos e tabelas depois */}
+      <main className="container">
+        {/* --- CARDS (Igual ao seu HTML original) --- */}
+        <section className="summary-grid">
+          <div className="card">
+            <header><span>Entradas</span></header>
+            <h3 className="text-green">R$ {income.toFixed(2)}</h3>
+          </div>
+          <div className="card">
+            <header><span>Saídas</span></header>
+            <h3 className="text-red">R$ {expense.toFixed(2)}</h3>
+          </div>
+          <div className="card total">
+            <header><span>Saldo Total</span></header>
+            <h3>R$ {total.toFixed(2)}</h3>
+          </div>
+        </section>
+
+        {/* --- FORMULÁRIO --- */}
+        <section className="card form-section" style={{ marginBottom: '2rem' }}>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="form-row">
+              <input type="text" placeholder="Descrição" />
+              <input type="text" placeholder="R$ 0,00" />
+              <select>
+                 <option>Categoria</option>
+                 <option>Alimentação</option>
+                 <option>Lazer</option>
+              </select>
+              <input type="date" />
+            </div>
+            <div style={{ textAlign: 'right' }}>
+               <button type="submit" className="btn-submit">ADICIONAR</button>
+            </div>
+          </form>
+        </section>
+
+        {/* --- TABELAS --- */}
+        <div className="tables-grid">
+           <section className="card">
+              <h2 style={{ fontSize: '1rem', color: '#a1a1aa', marginBottom: '1rem' }}>Resumo</h2>
+              <table>
+                 <thead>
+                    <tr><th>Mês</th><th className="text-right">Saldo</th></tr>
+                 </thead>
+                 <tbody>
+                    <tr><td>Janeiro</td><td className="text-right text-green">R$ 0,00</td></tr>
+                 </tbody>
+              </table>
+           </section>
+
+           <section className="card">
+              <h2 style={{ fontSize: '1rem', color: '#a1a1aa', marginBottom: '1rem' }}>Detalhes</h2>
+              <p style={{ color: '#555', fontSize: '0.9rem' }}>Nenhuma transação selecionada.</p>
+           </section>
+        </div>
       </main>
 
-      {/* --- MODAL DE PLANOS (JANELA FLUTUANTE) --- */}
+      {/* --- MODAL PLANOS (Estilo Gideon) --- */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Escolha seu Plano</h3>
-              <button className="close-btn" onClick={() => setShowModal(false)}>✖</button>
-            </div>
-
-            <div className="plans-row">
-              {/* Card Free */}
-              <div className={`plan-card ${userPlan === 'free' ? 'active' : ''}`}>
-                <h4>Free</h4>
-                <p>Grátis para sempre</p>
-                {userPlan === 'free' && <button disabled className="btn-current">Plano Atual</button>}
-              </div>
-
-              {/* Card Apoiador */}
-              <div className={`plan-card supporter ${userPlan === 'supporter' ? 'active' : ''}`}>
-                <h4>Apoiador</h4>
-                <p>R$ 9,90 / mês</p>
-                <ul>
-                  <li>Modo Escuro</li>
-                  <li>Relatórios VIP</li>
-                  <li>Apoie o projeto</li>
-                </ul>
-                {userPlan === 'supporter' ? (
-                  <button disabled className="btn-current">Você é Apoiador! 🌟</button>
-                ) : (
-                  <button className="btn-upgrade">Quero ser Apoiador</button>
-                )}
-              </div>
-            </div>
+             <h2 style={{ color: 'white', marginBottom: '20px' }}>Escolha seu Plano</h2>
+             
+             <div className={`plan-option ${userPlan === 'free' ? 'active' : ''}`}>
+                <h3 style={{ color: '#fff' }}>Free</h3>
+                <p style={{ color: '#aaa' }}>Básico e funcional.</p>
+             </div>
+             
+             <div className={`plan-option ${userPlan === 'supporter' ? 'active' : ''}`}>
+                <h3 style={{ color: '#10b981' }}>Apoiador 💎</h3>
+                <p style={{ color: '#aaa' }}>Modo Escuro + Relatórios</p>
+                <button className="btn-plans" style={{ marginTop: '10px', width: '100%' }}>
+                   {userPlan === 'supporter' ? 'Plano Atual' : 'Fazer Upgrade (R$ 9,90)'}
+                </button>
+             </div>
+             
+             <button 
+               onClick={() => setShowModal(false)}
+               style={{ marginTop: '20px', background: 'transparent', border: 'none', color: '#555', cursor: 'pointer' }}
+             >
+               Fechar
+             </button>
           </div>
         </div>
       )}

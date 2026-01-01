@@ -1,111 +1,105 @@
-/* --- ADICIONE ISTO AO FINAL DO SEU CSS --- */
-
-/* Ajuste do Header para alinhar o botão no canto */
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 30px;
-  border-bottom: 1px solid #333;
-  background-color: #121212;
+/* src/index.css - RESTAURADO */
+:root {
+  --bg-app: #09090b;
+  --bg-card: #18181b;
+  --bg-input: #ffffff;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --primary: #6366f1;
+  --radius: 12px;
 }
 
-.header-left { display: flex; align-items: center; gap: 15px; }
-.header-right { display: flex; align-items: center; gap: 15px; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background: var(--bg-app); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
 
-/* Badge do Plano (Etiqueta) */
-.plan-badge {
-  font-size: 0.8rem;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-weight: bold;
+/* --- LOGIN --- */
+.login-screen {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background-color: var(--bg-app); display: flex; align-items: center; justify-content: center;
+  z-index: 9999; padding: 20px;
 }
-.plan-badge.free { background-color: #333; color: #ccc; }
-.plan-badge.supporter { background-color: #ffd700; color: #000; }
+.login-card {
+  background: var(--bg-card); width: 100%; max-width: 380px; padding: 2.5rem 2rem;
+  border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+.login-card h2 { font-size: 1.75rem; margin-bottom: 0.5rem; color: #fff; font-weight: 700; }
+.login-card input {
+  width: 100%; height: 3.5rem; background: #fff; border: none; border-radius: 50px;
+  padding: 0 1.5rem; font-size: 1rem; color: #1f2937; margin-bottom: 1rem;
+}
+.login-card button {
+  width: 100%; height: 3.5rem; background: linear-gradient(to right, #10b981, #059669);
+  color: white; border: none; border-radius: 50px; font-weight: 700; cursor: pointer;
+  margin-top: 0.5rem; transition: transform 0.2s;
+}
+.login-card button:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
-/* O NOVO BOTÃO DE PLANOS */
+/* --- LAYOUT PRINCIPAL (DASHBOARD) --- */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+header { padding: 2rem 0; }
+.header-content { display: flex; justify-content: space-between; align-items: center; }
+#logo { font-weight: 700; font-size: 1.5rem; letter-spacing: -1px; color: var(--text-primary); }
+
+.user-area { display: flex; align-items: center; gap: 15px; font-size: 0.9rem; color: var(--text-secondary); }
+
+/* Botões do Header */
 .btn-plans {
-  background: transparent;
-  border: 1px solid #00e676; /* Verde Neon */
-  color: #00e676;
-  padding: 8px 16px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
+  background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green);
+  padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.85rem;
+  transition: 0.2s;
 }
-.btn-plans:hover {
-  background: #00e676;
-  color: #000;
-}
+.btn-plans:hover { background: var(--accent-green); color: white; }
 
 .btn-logout {
-  padding: 8px 12px;
-  background: #333;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 6px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff;
+  padding: 6px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 0.8rem;
 }
 
-/* --- MODAL (JANELA FLUTUANTE) --- */
+/* CARDS E GRID */
+.summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+.card {
+  background: var(--bg-card); border-radius: var(--radius); padding: 1.2rem;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.card header { padding: 0; margin-bottom: 0.5rem; display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 0.85rem; }
+.card h3 { font-size: 1.5rem; font-weight: 600; margin-top: 0.2rem; }
+.text-green { color: var(--accent-green); }
+.text-red { color: var(--accent-red); }
+
+/* FORMULÁRIO */
+.form-section input, .form-section select {
+  width: 100%; height: 3rem; background: #27272a; border: none; border-radius: 8px;
+  color: #fff; padding: 0 1rem; outline: none;
+}
+.form-row { display: grid; grid-template-columns: 2fr 1fr 1.2fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+.btn-submit { background: #fff; color: #000; border: none; padding: 0 2rem; height: 3rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+
+/* TABELAS */
+.tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+.text-right { text-align: right; }
+
+/* MODAL PLANOS */
 .modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.8); /* Fundo escuro transparente */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;
   backdrop-filter: blur(5px);
 }
-
 .modal-box {
-  background: #1e1e1e;
-  padding: 30px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 600px;
-  border: 1px solid #333;
-  color: white;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  background: var(--bg-card); padding: 2rem; border-radius: 16px; width: 90%; max-width: 500px;
+  border: 1px solid rgba(255,255,255,0.1); text-align: center;
 }
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+.plan-option {
+  border: 1px solid rgba(255,255,255,0.1); padding: 1rem; margin: 1rem 0; border-radius: 8px;
+  cursor: pointer; transition: 0.2s;
 }
+.plan-option.active { border-color: var(--accent-green); background: rgba(16, 185, 129, 0.05); }
 
-.close-btn {
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.plans-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.plan-card {
-  border: 1px solid #333;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.plan-card.active { border-color: #666; background: #252525; }
-.plan-card.supporter { border-color: #ffd700; }
-
-.btn-current {
-  background: #333; color: #888; border: none; padding: 10px; width: 100%; border-radius: 6px;
-}
-
-.btn-upgrade {
-  background: #ffd700; color: #000; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer;
+@media (max-width: 768px) {
+  .summary-grid, .form-row, .tables-grid { grid-template-columns: 1fr; }
 }
