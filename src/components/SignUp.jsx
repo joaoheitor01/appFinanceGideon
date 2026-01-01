@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
-const SignUp = () => {
+const SignUp = ({ onToggleView }) => {
   return (
     <div className="auth-container">
         <div className="auth-card">
@@ -29,7 +28,7 @@ const SignUp = () => {
             <div className="auth-footer">
                 Já tem conta? 
                 {/* O Link para a rota de login */}
-                <Link to="/login" className="auth-link">Conecte-se</Link>
+                <span onClick={onToggleView} className="auth-link" style={{ cursor: 'pointer' }}>Conecte-se</span>
             </div>
         </div>
     </div>
