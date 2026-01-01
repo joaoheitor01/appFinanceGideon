@@ -161,3 +161,75 @@ td { padding: 1rem 0; color: var(--text-primary); border-bottom: 1px solid var(-
   .summary-grid, .form-row { grid-template-columns: 1fr; }
   .month-nav { flex-wrap: wrap; }
 }
+/* Cole isso dentro de src/index.css */
+
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.card {
+    background-color: #1a1a1a;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+/* Importante: classes adaptadas para inputs no React */
+input, select {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    border: 1px solid #444;
+    border-radius: 5px;
+    color: #fff;
+    outline: none;
+    font-size: 1rem;
+    box-sizing: border-box; /* Garante que o padding não estoure a largura */
+}
+
+input:focus, select:focus {
+    border-color: #007bff;
+}
+
+.btn-cadastrar {
+    width: 100%;
+    padding: 12px;
+    background-color: #fff;
+    color: #000;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.btn-cadastrar:hover {
+    background-color: #e0e0e0;
+}
+
+.footer-text {
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.link-login {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
