@@ -1,39 +1,34 @@
+// src/components/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 
-// Recebemos 'session' e 'userPlan' vindos do App.jsx
 export default function Dashboard({ session, userPlan }) {
   const [darkMode, setDarkMode] = useState(false);
+  const [showPlanModal, setShowPlanModal] = useState(false); // Controle da janela de planos
 
-  // Efeito 1: Carregar preferência salva ao iniciar
+  // Lógica do Modo Escuro (mantida)
   useEffect(() => {
-    // Só aplica o tema escuro se o usuário tiver salvo ISSO E for Supporter
     const savedTheme = localStorage.getItem('gideon_theme');
-    
     if (savedTheme === 'dark' && userPlan === 'supporter') {
       setDarkMode(true);
       document.body.classList.add('dark-mode');
     } else {
-      // Garante que comece limpo caso contrário
       document.body.classList.remove('dark-mode');
     }
-  }, [userPlan]); // Se o plano mudar (upgrade em tempo real), ele reavalia
+  }, [userPlan]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
 
   const toggleDarkMode = () => {
-    // 1. Bloqueio de Segurança: Se não for supporter, para aqui.
     if (userPlan !== 'supporter') {
-      alert("🔒 Recurso exclusivo para Apoiadores! \n\nTorne-se um Apoiador para desbloquear o Modo Escuro e ajudar a manter o Gideon Finance.");
+      // Se clicar no cadeado, abre a janela de planos para vender o peixe
+      setShowPlanModal(true);
       return;
     }
-
-    // 2. Lógica de troca de tema (só executa se for supporter)
     const newMode = !darkMode;
     setDarkMode(newMode);
-
     if (newMode) {
       document.body.classList.add('dark-mode');
       localStorage.setItem('gideon_theme', 'dark');
@@ -45,60 +40,108 @@ export default function Dashboard({ session, userPlan }) {
 
   return (
     <div className="dashboard-wrapper">
-      <header style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        padding: '20px',
-        borderBottom: '1px solid #ccc'
-      }}>
-        <div>
-          <h2>Olá, {session.user.user_metadata.full_name || session.user.email}</h2>
-          <p>
-            Status do Plano: 
-            {/* Badge visual do plano */}
-            <span style={{ 
-              backgroundColor: userPlan === 'supporter' ? '#ffd700' : '#e0e0e0',
-              color: userPlan === 'supporter' ? '#000' : '#333',
-              padding: '4px 8px',
-              borderRadius: '4px',
-              marginLeft: '8px',
-              fontWeight: 'bold',
-              fontSize: '0.8rem'
-            }}>
-              {userPlan === 'supporter' ? '🌟 APOIADOR' : 'FREE'}
-            </span>
-          </p>
+      {/* --- HEADER --- */}
+      <header className="dash-header">
+        <div className="logo-area">
+          <h1>Gideon Finance</h1>
+          <span className="user-welcome">Olá, {session.user.user_metadata.full_name?.split(' ')[0]}</span>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px' }}>
-          {/* BOTÃO MODO ESCURO */}
-          <button 
-            onClick={toggleDarkMode}
-            style={{
-              cursor: userPlan === 'supporter' ? 'pointer' : 'not-allowed',
-              opacity: userPlan === 'supporter' ? 1 : 0.6,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '5px'
-            }}
-            title={userPlan === 'supporter' ? "Alternar tema" : "Bloqueado no plano Free"}
-          >
-            {darkMode ? '☀️ Claro' : '🌙 Escuro'}
-            {userPlan !== 'supporter' && '🔒'} 
+        <div className="actions-area">
+          {/* Botão de Planos no Canto */}
+          <button className="btn-plans" onClick={() => setShowPlanModal(true)}>
+            💎 Planos
           </button>
 
-          <button onClick={handleLogout}>Sair</button>
+          {/* Botão Modo Escuro */}
+          <button 
+            onClick={toggleDarkMode}
+            className={`btn-theme ${userPlan !== 'supporter' ? 'locked' : ''}`}
+            title={userPlan === 'supporter' ? "Alternar tema" : "Recurso exclusivo"}
+          >
+            {darkMode ? '🌙' : '☀️'}
+            {userPlan !== 'supporter' && <span className="lock-icon">🔒</span>}
+          </button>
+
+          <button onClick={handleLogout} className="btn-logout">Sair</button>
         </div>
       </header>
 
-      <main style={{ padding: '20px' }}>
-        {/* Seus componentes de transação, gráficos, etc entram aqui */}
-        <div className="content-card">
-          <h3>Resumo Financeiro</h3>
-          <p>Seus dados carregados aqui...</p>
+      {/* --- CONTEÚDO PRINCIPAL (O SITE) --- */}
+      <main className="dash-content">
+        {/* Cards de Resumo */}
+        <div className="summary-cards">
+          <div className="card summary-item">
+            <h3>Entradas</h3>
+            <p className="money income">R$ 0,00</p>
+          </div>
+          <div className="card summary-item">
+            <h3>Saídas</h3>
+            <p className="money expense">R$ 0,00</p>
+          </div>
+          <div className="card summary-item total">
+            <h3>Saldo Atual</h3>
+            <p className="money">R$ 0,00</p>
+          </div>
+        </div>
+
+        {/* Área de Transações */}
+        <div className="transactions-area card">
+          <div className="area-header">
+            <h3>Suas Transações</h3>
+            <button className="btn-new">+ Nova Transação</button>
+          </div>
+          
+          <div className="empty-state">
+            <p>Nenhuma transação registrada ainda.</p>
+          </div>
         </div>
       </main>
+
+      {/* --- MODAL DE PLANOS (Janela Flutuante) --- */}
+      {showPlanModal && (
+        <div className="modal-overlay" onClick={() => setShowPlanModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Escolha seu Plano</h2>
+              <button className="close-btn" onClick={() => setShowPlanModal(false)}>×</button>
+            </div>
+            
+            <div className="plans-grid">
+              {/* Plano Free */}
+              <div className={`plan-card ${userPlan === 'free' ? 'active-plan' : ''}`}>
+                <h3>Free</h3>
+                <p className="price">R$ 0,00</p>
+                <ul>
+                  <li>✅ Controle de Entradas/Saídas</li>
+                  <li>✅ Histórico Básico</li>
+                  <li>❌ Modo Escuro</li>
+                  <li>❌ Relatórios Avançados</li>
+                </ul>
+                {userPlan === 'free' && <button className="btn-current" disabled>Plano Atual</button>}
+              </div>
+
+              {/* Plano Apoiador */}
+              <div className={`plan-card ${userPlan === 'supporter' ? 'active-plan supporter' : 'supporter'}`}>
+                <div className="badge">RECOMENDADO</div>
+                <h3>Apoiador</h3>
+                <p className="price">R$ 9,90 <span className="period">/mês</span></p>
+                <ul>
+                  <li>✅ <strong>Tudo do Free</strong></li>
+                  <li>✅ <strong>Modo Escuro (Dark Mode)</strong></li>
+                  <li>✅ Relatórios Gráficos (Em breve)</li>
+                  <li>✅ Suporte Prioritário</li>
+                </ul>
+                {userPlan === 'supporter' ? (
+                  <button className="btn-current" disabled>Você é Apoiador! 🌟</button>
+                ) : (
+                  <button className="btn-upgrade">Quero ser Apoiador</button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
