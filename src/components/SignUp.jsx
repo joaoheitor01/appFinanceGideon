@@ -29,7 +29,7 @@ const SignUp = () => {
             <div className="auth-footer">
                 Já tem conta? 
                 {/* O Link para a rota de login */}
-                <Link to="/" className="auth-link">Conecte-se</Link>
+                <Link to="/login" className="auth-link">Conecte-se</Link>
             </div>
         </div>
     </div>
