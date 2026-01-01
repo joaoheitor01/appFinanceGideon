@@ -37,7 +37,7 @@ export default function Login({ onToggleView }) {
           />
           
           <button type="submit">
-            {loading ? 'CARREGANDO...' : 'LOGIN'}
+            {loading ? 'CARREGANDO...' : 'ENTRAR'}
           </button>
         </form>
 

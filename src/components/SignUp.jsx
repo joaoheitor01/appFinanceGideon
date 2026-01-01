@@ -12,7 +12,7 @@ const SignUp = () => {
             <form>
                 {/* Inputs com o visual novo */}
                 <input type="text" placeholder="Nome Completo" className="auth-input" required />
-                <input type="email" placeholder="Email" defaultValue="heitorkbb@gmail.com" className="auth-input" required />
+                <input type="email" placeholder="Email" className="auth-input" required />
                 <input type="password" placeholder="Senha" className="auth-input" required />
                 
                 {/* Selects adaptados ao visual arredondado */}

@@ -229,9 +229,9 @@ export default function Dashboard({ session, userPlan }) {
              <h2 style={{ color: 'white', marginBottom: '20px' }}>Planos Gideon</h2>
              <div className={`plan-option ${userPlan === 'supporter' ? 'active' : ''}`}>
                 <h3 style={{ color: '#10b981' }}>Apoiador 💎</h3>
-                <p style={{ color: '#aaa' }}>Ajude o projeto a crescer!</p>
+                <p style={{ color: '#aaa', fontSize: '0.9rem' }}>Ajude o projeto a crescer!</p>
                 <button className="btn-plans" style={{ marginTop: '10px', width: '100%' }}>
-                   {userPlan === 'supporter' ? 'Plano Ativo' : 'Upgrade (R$ 9,90)'}
+                   {userPlan === 'supporter' ? 'Plano Ativo' : 'Assinar (R$ 9,90)'}
                 </button>
              </div>
              <button onClick={() => setShowModal(false)} style={{ marginTop: '20px', background: 'transparent', border: 'none', color: '#555', cursor: 'pointer' }}>Fechar</button>
