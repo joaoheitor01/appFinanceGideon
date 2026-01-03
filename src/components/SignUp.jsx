@@ -361,53 +361,55 @@ async function handleSignUp(e) {
   }
 
   try {
-    // 1. Registrar o usuário no Auth
+    // 1. Registrar o usuário no Auth - APENAS com dados básicos
     const { data: authData, error: authError } = await supabase.auth.signUp({ 
       email, 
       password,
       options: {
         data: {
           full_name: fullName,
-          account_type: accountType,
-          birth_date: birthDate
+          account_type: accountType
         },
         emailRedirectTo: `${window.location.origin}/auth/callback`
       }
     });
 
-    if (authError) throw authError;
+    if (authError) {
+      // Tratar erros específicos
+      if (authError.message.includes('User already registered')) {
+        throw new Error("Este email já está cadastrado. Tente fazer login.");
+      }
+      throw authError;
+    }
 
-    // 2. Se o usuário foi criado com sucesso (mesmo sem confirmação de email)
+    // 2. SE o usuário foi criado com sucesso, criar o perfil na tabela profiles
     if (authData.user) {
-      // Tentar criar o perfil imediatamente
       const { error: profileError } = await supabase
         .from('profiles')
-        .upsert([
+        .insert([
           {
             id: authData.user.id,
             full_name: fullName,
             birth_date: birthDate,
             email: email,
             account_type: accountType,
-            plan: 'free',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            plan: 'free'
           }
-        ], {
-          onConflict: 'id',
-          ignoreDuplicates: false
-        });
+        ]);
 
       if (profileError) {
-        console.warn("Erro ao criar perfil:", profileError);
-        // Não lançamos erro aqui porque o usuário foi criado no Auth
-        // O perfil pode ser criado posteriormente pelo trigger
+        console.error("Erro ao criar perfil:", profileError);
+        
+        // Se for erro de duplicidade, não é grave - o usuário já existe
+        if (!profileError.message.includes('duplicate key')) {
+          throw new Error("Erro ao salvar dados do perfil. Contate o suporte.");
+        }
       }
     }
 
-    setSuccess("Conta criada com sucesso! Verifique seu email para confirmar o cadastro.");
+    setSuccess("✅ Cadastro realizado com sucesso! Verifique seu email para confirmar.");
     
-    // Resetar formulário após sucesso
+    // Resetar formulário após 3 segundos
     setTimeout(() => {
       setFullName("");
       setBirthDate("");
@@ -419,15 +421,7 @@ async function handleSignUp(e) {
 
   } catch (error) {
     console.error("Erro no cadastro:", error);
-    
-    // Mensagens de erro mais amigáveis
-    if (error.message.includes('already registered')) {
-      setError("Este email já está cadastrado. Tente fazer login ou usar outro email.");
-    } else if (error.message.includes('password')) {
-      setError("A senha não atende aos requisitos mínimos de segurança.");
-    } else {
-      setError(error.message || "Erro ao criar conta. Tente novamente.");
-    }
+    setError(error.message || "Erro ao criar conta. Tente novamente.");
   } finally {
     setLoading(false);
   }
