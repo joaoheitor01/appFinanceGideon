@@ -1,8 +1,10 @@
-// Dashboard com layout claro e centralizado
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Dashboard = ({ session, userPlan }) => {
+  const { theme, toggleTheme, isDark } = useTheme();
+  
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -353,7 +355,38 @@ const Dashboard = ({ session, userPlan }) => {
                   </button>
                 </div>
               </div>
-
+            </div>
+            
+            // tema escuro 
+  return 
+    <div className="app-wrapper">
+      <header className="app-header">
+        <div className="container header-content">
+          <div className="brand">
+            <h1>Gideon Finance</h1>
+            <span className="brand-subtitle">Controle Financeiro</span>
+          </div>
+          
+          <div className="user-area">
+            {/* Botão de alternância de tema */}
+            <button 
+              onClick={toggleTheme} 
+              className="theme-toggle-btn"
+              title={isDark ? 'Alternar para modo claro' : 'Alternar para modo escuro'}
+            >
+              {isDark ? '☀️' : '🌙'}
+            </button>
+            
+            <div className="user-info">
+              <div className="user-email">{session.user.email}</div>
+              <div className="user-plan">Plano: {userPlan}</div>
+            </div>
+            <button onClick={handleLogout} className="btn-logout">
+              Sair
+            </button>
+          </div>
+        </div>
+      </header>
               <div className="form-group">
                 <label className="form-label">Data</label>
                 <input

@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { supabase } from "../services/supabase";
+import { useTheme } from "../contexts/ThemeContext"; // Importar o hook
 
 export default function Login({ onToggleView }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  
+  // Obter funções do tema
+  const { theme, toggleTheme, isDark } = useTheme();
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -23,8 +27,19 @@ export default function Login({ onToggleView }) {
 
   return (
     <div className="auth-card fade-in">
+      {/* Cabeçalho com botão de tema */}
       <div className="auth-header">
-        <div className="auth-logo">Gideon Finance</div>
+        <div className="auth-header-top">
+          <h1>Gideon Finance</h1>
+          <button 
+            onClick={toggleTheme} 
+            className="theme-toggle-btn"
+            title={isDark ? 'Alternar para modo claro' : 'Alternar para modo escuro'}
+            aria-label={isDark ? 'Alternar para modo claro' : 'Alternar para modo escuro'}
+          >
+            {isDark ? '☀️' : '🌙'}
+          </button>
+        </div>
         <p className="auth-subtitle">Gerencie suas finanças com clareza e simplicidade</p>
       </div>
 
@@ -48,7 +63,8 @@ export default function Login({ onToggleView }) {
         />
 
         {error && (
-          <div className="text-red text-center">
+          <div className="error-message">
+            <span className="error-icon">⚠️</span>
             {error}
           </div>
         )}

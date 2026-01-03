@@ -1036,3 +1036,762 @@ body {
     height: 20px;
   }
 }
+/* =========================================
+   SISTEMA DE TEMAS (DARK MODE PRINCIPAL)
+   ========================================= */
+
+/* Variáveis para tema escuro (padrão) */
+:root {
+  /* --- PALETA DE CORES (DARK MODE) --- */
+  --bg-app: #09090b;
+  --bg-card: #18181b;
+  --bg-input: #27272a;
+  --bg-surface: #18181b;
+  
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-blue: #3b82f6;
+  
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.05);
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Variáveis para tema claro */
+[data-theme="light"] {
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-input: #f1f5f9;
+  --bg-surface: #ffffff;
+  
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  
+  --accent-green: #059669;
+  --accent-red: #dc2626;
+  --accent-blue: #3b82f6;
+  
+  --border-color: #e2e8f0;
+  --border-light: #f1f5f9;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos para botão de alternância de tema */
+.theme-toggle-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  margin: 0 8px;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--accent-blue);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Botão de tema na tela de auth */
+.auth-header-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.auth-theme-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+/* Transições suaves para mudança de tema */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Para elementos que não devem ter transição */
+.no-transition,
+.no-transition * {
+  transition: none !important;
+}
+
+/* Ajuste para elementos específicos no tema claro */
+[data-theme="light"] {
+  /* Melhor contraste para inputs no tema claro */
+  .auth-input, .form-input, .form-select {
+    background: white;
+    border-color: #d1d5db;
+    color: #1f2937;
+  }
+  
+  .auth-input:focus, .form-input:focus, .form-select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  /* Cards com sombra mais suave */
+  .summary-card, .form-section, .table-card, .auth-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-color);
+  }
+  
+  /* Hover states mais sutis */
+  .btn-logout:hover, .btn-cancel:hover {
+    background: #f1f5f9;
+  }
+  
+  .btn-submit:hover {
+    background: #047857;
+  }
+  
+  /* Tabelas com melhor legibilidade */
+  .data-table tr:hover {
+    background: #f8fafc;
+  }
+  
+  /* Ícones no tema claro */
+  .theme-toggle-btn {
+    background: #e2e8f0;
+    color: #4b5563;
+  }
+  
+  .theme-toggle-btn:hover {
+    background: var(--accent-blue);
+    color: white;
+  }
+}
+
+/* Ajuste para elementos específicos no tema escuro */
+[data-theme="dark"] {
+  /* Inputs mais contrastantes */
+  .auth-input, .form-input, .form-select {
+    background: var(--bg-input);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  
+  /* Cards com profundidade */
+  .summary-card, .form-section, .table-card, .auth-card {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  /* Hover states mais vibrantes */
+  .btn-logout:hover, .btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Efeito de brilho sutil nos cards */
+  .summary-card:hover, .form-section:hover, .table-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Ícones no tema escuro */
+  .theme-toggle-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fbbf24; /* Amarelo para o sol */
+  }
+}
+
+/* Estilo do botão de tema quando ativo (modo claro) */
+[data-theme="light"] .theme-toggle-btn {
+  color: #1e40af; /* Azul escuro para a lua */
+}
+
+/* =========================================
+   ANIMAÇÃO PARA ALTERNÂNCIA DE TEMA
+   ========================================= */
+@keyframes themeTransition {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.theme-transition {
+  animation: themeTransition 0.3s ease-out;
+}
+
+/* =========================================
+   RESPONSIVIDADE DO BOTÃO DE TEMA
+   ========================================= */
+@media (max-width: 768px) {
+  .theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+  
+  .auth-theme-btn {
+    top: 15px;
+    right: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-area {
+    gap: 8px;
+  }
+  
+  .theme-toggle-btn {
+    margin: 0 4px;
+  }
+}
+/* =========================================
+   ESTILOS PARA O CABEÇALHO DE AUTH COM BOTÃO DE TEMA
+   ========================================= */
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.auth-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.auth-header-top h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.auth-header .theme-toggle-btn {
+  position: static;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.auth-header .theme-toggle-btn:hover {
+  background: var(--accent-blue);
+  color: white;
+  transform: scale(1.1);
+}
+
+.auth-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+  .auth-header-top {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .auth-header-top h1 {
+    font-size: 1.75rem;
+    order: 2;
+  }
+  
+  .auth-header .theme-toggle-btn {
+    order: 1;
+    align-self: flex-end;
+    margin-bottom: 8px;
+  }
+  
+  .auth-subtitle {
+    font-size: 0.95rem;
+    order: 3;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-header-top h1 {
+    font-size: 1.5rem;
+  }
+  
+  .auth-header .theme-toggle-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+}
+
+/* =========================================
+   ESTILOS PARA BOTÕES DE TEMA NO DASHBOARD
+   ========================================= */
+
+.user-area {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-area .theme-toggle-btn {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.user-area .theme-toggle-btn:hover {
+  background: var(--accent-blue);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* =========================================
+   ANIMAÇÃO DE TROCA DE TEMA
+   ========================================= */
+
+.theme-transition * {
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* Indicador visual do tema atual */
+.theme-indicator {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .theme-indicator::before {
+  content: "Modo Escuro";
+}
+
+[data-theme="light"] .theme-indicator::before {
+  content: "Modo Claro";
+}
+
+/* =========================================
+   AJUSTES ESPECÍFICOS PARA TEMAS
+   ========================================= */
+
+/* Tema Escuro (Padrão) */
+[data-theme="dark"] {
+  .auth-card {
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  }
+  
+  .auth-input {
+    background: var(--bg-input);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+  }
+  
+  .auth-input:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  }
+}
+
+/* Tema Claro */
+[data-theme="light"] {
+  .auth-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .auth-input {
+    background: white;
+    border: 1px solid #d1d5db;
+    color: #1f2937;
+  }
+  
+  .auth-input:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .theme-toggle-btn {
+    background: #e2e8f0;
+    color: #4b5563;
+  }
+  
+  .theme-toggle-btn:hover {
+    background: var(--accent-blue);
+    color: white;
+  }
+}
+/* =========================================
+   ESTILOS ESPECÍFICOS PARA O SIGNUP
+   ========================================= */
+
+/* Container de força da senha */
+.password-strength-container {
+  margin-top: 8px;
+}
+
+.password-strength-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.password-strength-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-strength-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+/* Container de input de senha */
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input {
+  padding-right: 45px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+  z-index: 2;
+}
+
+.password-toggle-btn:hover {
+  color: var(--text-primary);
+}
+
+.password-toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Indicador de correspondência de senha */
+.password-match {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.password-match.match {
+  color: var(--accent-green);
+}
+
+.password-match.no-match {
+  color: var(--accent-red);
+}
+
+/* Seletor de tipo de conta */
+.account-type-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.account-type-btn {
+  background: var(--bg-input);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.account-type-btn:hover:not(:disabled) {
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.account-type-btn.active {
+  border-color: var(--accent-green);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.account-type-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.account-icon {
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border-radius: var(--radius-full);
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.account-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  font-size: 0.9rem;
+}
+
+.account-desc {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  line-height: 1.2;
+}
+
+/* Termos e condições */
+.terms-group {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--bg-input);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.terms-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.terms-label input[type="checkbox"] {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.terms-text {
+  flex: 1;
+}
+
+.terms-link {
+  color: var(--accent-blue);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
+}
+
+/* Mensagens */
+.message {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  margin: 16px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.error-message {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--accent-red);
+}
+
+.success-message {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: var(--accent-green);
+}
+
+.message-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.message-content {
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.message-content p {
+  margin: 4px 0;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Botão de submit */
+.submit-btn {
+  margin-top: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Dica do formulário */
+.form-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+/* Link de autenticação */
+.auth-link {
+  background: none;
+  border: none;
+  color: var(--accent-blue);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+  font-size: inherit;
+  text-decoration: underline;
+}
+
+.auth-link:hover:not(:disabled) {
+  color: var(--accent-green);
+  text-decoration: none;
+}
+
+.auth-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+  .account-type-selector {
+    grid-template-columns: 1fr;
+  }
+  
+  .terms-label {
+    font-size: 0.8rem;
+  }
+  
+  .message-content {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 24px 20px;
+  }
+  
+  .account-type-btn {
+    padding: 12px;
+  }
+  
+  .account-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.25rem;
+  }
+  
+  .terms-group {
+    padding: 12px;
+  }
+}

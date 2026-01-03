@@ -1,12 +1,12 @@
-// src/App.jsx - COM LAYOUT CLARO E CENTRALIZADO
 import React, { useState, useEffect } from 'react';
 import { supabase } from './services/supabase';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import Dashboard from './components/Dashboard';
+import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
 
-export default function App() {
+function AppContent() {
   const [session, setSession] = useState(null);
   const [userPlan, setUserPlan] = useState('free');
   const [view, setView] = useState('login');
@@ -49,12 +49,20 @@ export default function App() {
   }
 
   return (
-    <div className="auth-wrapper fade-in">
+    <div className="auth-wrapper">
       {view === 'login' ? (
         <Login onToggleView={() => setView('signup')} />
       ) : (
         <SignUp onToggleView={() => setView('login')} />
       )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
