@@ -796,3 +796,243 @@ body {
 .w-full {
   width: 100%;
 }
+/* =========================================
+   ESTILOS ESPECÍFICOS PARA CADASTRO
+   ========================================= */
+
+/* Indicador de Progresso */
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active .step-number {
+  background: var(--accent-green);
+  color: white;
+}
+
+.step-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.progress-step.active .step-label {
+  color: var(--text-primary);
+}
+
+.progress-line {
+  width: 40px;
+  height: 2px;
+  background: var(--border-color);
+  margin: 0 4px;
+}
+
+/* Seletor de Tipo de Conta */
+.account-type-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.account-type-btn {
+  background: var(--bg-input);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.account-type-btn:hover {
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.account-type-btn.active {
+  border-color: var(--accent-green);
+  background: rgba(5, 150, 105, 0.05);
+}
+
+.account-icon {
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border-radius: var(--radius-full);
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.account-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Força da Senha */
+.password-strength {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  height: 4px;
+}
+
+.strength-bar {
+  flex: 1;
+  background: var(--border-color);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.strength-bar.active {
+  background: var(--accent-green);
+}
+
+/* Termos e Condições */
+.terms-group {
+  margin-top: 16px;
+}
+
+.terms-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.terms-label input[type="checkbox"] {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+}
+
+.terms-link {
+  color: var(--accent-blue);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
+}
+
+/* Mensagens */
+.error-message {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  color: var(--accent-red);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.success-message {
+  background: rgba(5, 150, 105, 0.1);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  color: var(--accent-green);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-icon, .success-icon {
+  font-size: 1rem;
+}
+
+/* Spinner para loading */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Textos de ajuda */
+.help-text {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.error-text {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--accent-red);
+}
+
+/* Ajustes responsivos para o seletor de tipo de conta */
+@media (max-width: 480px) {
+  .account-type-selector {
+    grid-template-columns: 1fr;
+  }
+  
+  .progress-indicator {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .progress-line {
+    width: 2px;
+    height: 20px;
+  }
+}
