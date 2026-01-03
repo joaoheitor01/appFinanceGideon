@@ -10,12 +10,7 @@
   --radius: 12px;
 }
 
-* { 
-  margin: 0; 
-  padding: 0; 
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif; 
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
 body { 
   background: var(--bg-app); 
@@ -23,3 +18,30 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+/* Layout de Tabelas Lado a Lado */
+.tables-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .tables-grid { grid-template-columns: 1fr; }
+}
+
+/* Cards e Tabelas */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+th { text-align: left; color: var(--text-secondary); font-size: 0.85rem; padding: 1rem; border-bottom: 1px solid var(--border-color); }
+td { padding: 1rem; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 0.95rem; }
