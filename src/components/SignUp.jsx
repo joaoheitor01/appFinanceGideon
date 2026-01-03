@@ -348,3 +348,87 @@ export default function SignUp({ onToggleView }) {
     </div>
   );
 }
+async function handleSignUp(e) {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
+  setSuccess("");
+
+  // Validar formulário
+  if (!validateForm()) {
+    setLoading(false);
+    return;
+  }
+
+  try {
+    // 1. Registrar o usuário no Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          account_type: accountType,
+          birth_date: birthDate
+        },
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
+
+    if (authError) throw authError;
+
+    // 2. Se o usuário foi criado com sucesso (mesmo sem confirmação de email)
+    if (authData.user) {
+      // Tentar criar o perfil imediatamente
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert([
+          {
+            id: authData.user.id,
+            full_name: fullName,
+            birth_date: birthDate,
+            email: email,
+            account_type: accountType,
+            plan: 'free',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ], {
+          onConflict: 'id',
+          ignoreDuplicates: false
+        });
+
+      if (profileError) {
+        console.warn("Erro ao criar perfil:", profileError);
+        // Não lançamos erro aqui porque o usuário foi criado no Auth
+        // O perfil pode ser criado posteriormente pelo trigger
+      }
+    }
+
+    setSuccess("Conta criada com sucesso! Verifique seu email para confirmar o cadastro.");
+    
+    // Resetar formulário após sucesso
+    setTimeout(() => {
+      setFullName("");
+      setBirthDate("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setAccountType("personal");
+    }, 3000);
+
+  } catch (error) {
+    console.error("Erro no cadastro:", error);
+    
+    // Mensagens de erro mais amigáveis
+    if (error.message.includes('already registered')) {
+      setError("Este email já está cadastrado. Tente fazer login ou usar outro email.");
+    } else if (error.message.includes('password')) {
+      setError("A senha não atende aos requisitos mínimos de segurança.");
+    } else {
+      setError(error.message || "Erro ao criar conta. Tente novamente.");
+    }
+  } finally {
+    setLoading(false);
+  }
+}
