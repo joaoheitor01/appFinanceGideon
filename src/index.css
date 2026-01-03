@@ -1,123 +1,282 @@
 /* src/index.css */
 :root {
-    /* Paleta Neutra "Slate" */
-    --bg-page: #F5F7FA;
-    --bg-surface: #FFFFFF;
-    --text-primary: #2D3748;
-    --text-secondary: #718096;
-    --border-color: #E2E8F0;
-    
-    /* Cores Funcionais */
-    --accent-green: #38A169;
-    --accent-red: #E53E3E;
-    --accent-dark: #1A202C;
-    
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --dark-blue: #363f5f;
+    --green: #49AA26;
+    --light-green: #3dd705;
+    --red: #e92929;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-body { background-color: var(--bg-page); color: var(--text-primary); font-size: 15px; }
+html {
+    font-size: 93.75%; /* 15px */
+}
 
-/* Cabeçalho */
+body {
+    background: #f0f2f5;
+    font-family: 'Poppins', sans-serif;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+.container {
+    width: min(90vw, 800px);
+    margin: auto;
+}
+
+/* --- Titles --- */
+h2 {
+    margin-top: 3.2rem;
+    margin-bottom: 0.8rem;
+    color: var(--dark-blue);
+    font-weight: 400;
+}
+
+/* --- Header --- */
 header {
-    background: var(--bg-surface);
-    border-bottom: 1px solid var(--border-color);
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    background: #2D4A22;
+    padding: 2rem 0 10rem;
+    text-align: center;
 }
 
-header h1 { font-size: 1.25rem; color: var(--accent-dark); font-weight: 700; }
-.logo-span { color: var(--accent-green); }
-
-/* User Info no Header */
-.user-info { display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; }
-.btn-logout { 
-    background: none; border: 1px solid var(--accent-red); color: var(--accent-red); 
-    padding: 0.4rem 1rem; border-radius: 4px; cursor: pointer; transition: 0.2s; 
+header h1 {
+    color: #fff;
+    font-weight: 100;
 }
-.btn-logout:hover { background: var(--accent-red); color: white; }
 
-/* Container Principal */
-.main-container { max-width: 1024px; margin: 2rem auto; padding: 0 1rem; }
+/* --- Balance / Cards --- */
+#balance {
+    margin-top: -8rem;
+}
 
-/* Cards de Resumo */
-.balance-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+#balance h2 {
+    color: white;
+    margin-top: 0;
 }
 
 .card {
-    background: var(--bg-surface);
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 0.25rem;
+    margin-bottom: 2rem;
+    color: var(--dark-blue);
 }
 
-.card.total { background: var(--accent-green); color: white; }
-.card.total h3, .card.total p { color: white; }
-
-.card h3 { font-size: 1rem; font-weight: 500; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
-.card p { font-size: 2rem; font-weight: 600; }
-
-/* Botão Nova Transação */
-.actions-bar { margin-bottom: 1rem; display: flex; justify-content: flex-end; }
-.btn-new {
-    background: var(--accent-green); color: white; border: none; padding: 0.8rem 1.5rem;
-    border-radius: 4px; cursor: pointer; font-weight: 600; transition: 0.2s;
+.card h3 {
+    font-weight: normal;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
-.btn-new:hover { filter: brightness(0.9); }
 
-/* Tabela */
-.transaction-table-container { overflow-x: auto; }
-table { width: 100%; border-spacing: 0 0.5rem; color: #969cb3; }
-th { background: var(--bg-surface); color: var(--text-secondary); font-weight: 600; padding: 1rem 2rem; text-align: left; font-size: 0.9rem; }
-td { background: var(--bg-surface); padding: 1rem 2rem; color: var(--text-primary); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
-td:first-child { border-radius: 8px 0 0 8px; border-left: 1px solid var(--border-color); }
-td:last-child { border-radius: 0 8px 8px 0; border-right: 1px solid var(--border-color); }
+.card p {
+    font-size: 2rem;
+    line-height: 3rem;
+    margin-top: 1rem;
+}
 
-td.income { color: var(--accent-green); }
-td.expense { color: var(--accent-red); }
+.card.total {
+    background: var(--green);
+    color: white;
+}
 
-/* Modal (Overlay) */
+/* --- Table --- */
+#transaction {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+
+#data-table {
+    width: 100%;
+    border-spacing: 0 0.5rem;
+    color: #969cb3;
+}
+
+table th {
+    background: white;
+    font-weight: normal;
+    padding: 1rem 2rem;
+    text-align: left;
+}
+
+table tbody tr {
+    opacity: 0.7;
+}
+
+table tbody tr:hover {
+    opacity: 1;
+}
+
+table td {
+    background: white;
+    padding: 1rem 2rem;
+}
+
+td.description {
+    color: var(--dark-blue);
+}
+
+td.income {
+    color: #12a454;
+}
+
+td.expense {
+    color: var(--red);
+}
+
+table td:first-child {
+    border-radius: 0.25rem 0 0 0.25rem;
+}
+
+table td:last-child {
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+
+/* --- Buttons & Links --- */
+a {
+    color: var(--green);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--light-green);
+}
+
+button {
+    width: 100%;
+    height: 50px;
+    border: none;
+    color: white;
+    background: var(--green);
+    padding: 0;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--light-green);
+}
+
+.button.new {
+    display: inline-block;
+    margin-bottom: .8rem;
+}
+
+.button.cancel {
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 0.25rem;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+}
+
+.button.cancel:hover {
+    opacity: 1;
+}
+
+/* --- Header Actions (Sair) --- */
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.user-display {
+    color: white;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+.btn-logout {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    width: auto;
+    padding: 0.2rem 1rem;
+    height: auto;
+    font-size: 0.8rem;
+}
+.btn-logout:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+/* --- Modal --- */
 .modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex; align-items: center; justify-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 999;
 }
-.modal-content {
-    background: var(--bg-surface); padding: 2.5rem; border-radius: 8px; width: 100%; max-width: 500px;
-}
-.modal-content h2 { margin-bottom: 2rem; color: var(--text-primary); }
 
-.input-group { margin-bottom: 1rem; }
-.input-group input, .input-group select {
-    width: 100%; padding: 0.8rem; border-radius: 5px; border: 1px solid var(--border-color); background: #f0f2f5;
+.modal {
+    background: #f0f2f5;
+    padding: 2.4rem;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    border-radius: 0.25rem;
 }
 
-/* Form Actions */
-.form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
-.btn-cancel {
-    width: 50%; height: 50px; border: 2px solid var(--accent-red); color: var(--accent-red);
-    background: transparent; border-radius: 4px; cursor: pointer; opacity: 0.6; transition: 0.2s;
+/* --- Form --- */
+#form {
+    max-width: 500px;
 }
-.btn-save {
-    width: 50%; height: 50px; border: none; background: var(--accent-green);
-    color: white; border-radius: 4px; cursor: pointer; transition: 0.2s;
-}
-.btn-cancel:hover { opacity: 1; }
-.btn-save:hover { filter: brightness(0.9); }
 
-/* Responsivo */
-@media (max-width: 768px) {
-    .balance-container { grid-template-columns: 1fr; }
+#form h2 {
+    margin-top: 0;
+}
+
+input {
+    border: none;
+    border-radius: 0.2rem;
+    padding: 0.8rem;
+    width: 100%;
+}
+
+.input-group {
+    margin-top: 0.8rem;
+}
+
+.input-group small {
+    opacity: 0.4;
+}
+
+.input-group.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.input-group.actions .button,
+.input-group.actions button {
+    width: 48%;
+}
+
+/* --- Responsive --- */
+@media (min-width: 800px) {
+    html { font-size: 87.5%; }
+    #balance { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
 }
