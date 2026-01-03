@@ -1,36 +1,24 @@
-import React from 'react';
+import { useState } from "react";
+import { supabase } from "../services/supabase";
 
-const SignUp = ({ onToggleView }) => {
+export default function SignUp({ onToggleView }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function handleSignUp(e) {
+    e.preventDefault();
+    await supabase.auth.signUp({ email, password });
+  }
+
   return (
-    <div className="login-screen">
-        <div className="login-card">
-            
-            <h2>Criar Conta</h2>
-            <p className="subtitle">Preencha seus dados para começar</p>
-
-            <form>
-                <input type="text" placeholder="Nome Completo" required />
-                <input type="email" placeholder="Email" required />
-                <input type="password" placeholder="Senha" required />
-                
-                {/* O Select agora usa o mesmo estilo dos inputs */}
-                <select defaultValue="" required>
-                    <option value="" disabled>Gênero</option>
-                    <option value="m">Masculino</option>
-                    <option value="f">Feminino</option>
-                    <option value="o">Outro</option>
-                </select>
-
-                <button type="submit">CADASTRAR</button>
-            </form>
-
-            <div className="login-footer">
-                Já tem conta? 
-                <span onClick={onToggleView}>Conecte-se</span>
-            </div>
-        </div>
-    </div>
+    <main>
+      <h1>Criar Conta</h1>
+      <form onSubmit={handleSignUp}>
+        <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+        <input type="password" placeholder="Senha" onChange={(e) => setPassword(e.target.value)} />
+        <button>Cadastrar</button>
+      </form>
+      <p onClick={onToggleView}>Já tenho conta</p>
+    </main>
   );
 }
-
-export default SignUp;
