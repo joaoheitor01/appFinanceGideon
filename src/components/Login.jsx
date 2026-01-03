@@ -11,14 +11,19 @@ export default function Login({ onToggleView }) {
   }
 
   return (
-    <main>
-      <h1>Gideon Finance</h1>
-      <form onSubmit={handleLogin}>
-        <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-        <input type="password" placeholder="Senha" onChange={(e) => setPassword(e.target.value)} />
-        <button>Entrar</button>
-      </form>
-      <p onClick={onToggleView}>Criar conta</p>
-    </main>
+    <div className="login-screen">
+      <div className="login-card">
+        <h2>Gideon Finance</h2> 
+        <p className="subtitle">Login para continuar</p> 
+        <form onSubmit={handleLogin}>
+          <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} required /> 
+          <input type="password" placeholder="Senha" onChange={(e) => setPassword(e.target.value)} required /> 
+          <button type="submit">Entrar</button> 
+        </form>
+        <div className="login-footer">
+          Ainda não tem conta? <span onClick={onToggleView}>Criar conta</span> 
+        </div>
+      </div>
+    </div>
   );
 }
