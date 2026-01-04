@@ -1,36 +1,25 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState } from "react";
 
-const ThemeContext = createContext();
+const ThemeContext = createContext(null);
 
-export const useTheme = () => useContext(ThemeContext);
+export function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState("light");
 
-export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('dark');
-
-  // Carregar tema do localStorage ao inicializar
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  }, []);
-
-  // Atualizar tema e salvar no localStorage
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-  };
-
-  const value = {
-    theme,
-    toggleTheme,
-    isDark: theme === 'dark'
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   return (
-    <ThemeContext.Provider value={value}>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
-};
+}
+
+export function useTheme() {
+  return useContext(ThemeContext);
+}
+export function useIsDark() {
+  const { theme } = useContext(ThemeContext);
+  return theme === "dark";
+}
