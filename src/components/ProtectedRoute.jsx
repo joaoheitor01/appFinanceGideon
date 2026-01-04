@@ -1,25 +1,26 @@
-// src/components/ProtectedRoute.jsx - Exemplo de rota protegida
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+// src/components/auth/ProtectedRoute.jsx
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import LoadingSpinner from '../common/LoadingSpinner';
 
-const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+const ProtectedRoute = ({ children, requiredRole = null }) => {
+  const { user, loading, profile } = useAuth();
+  const location = useLocation();
 
-  // Mostra um loader enquanto verifica autenticação
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen />;
   }
 
-  // Redireciona para login se não estiver autenticado
   if (!user) {
-    return <Navigate to="/login" replace />;
+    // Redirecionar para login, guardando a página atual
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Renderiza o componente filho se autenticado
+  // Verificar role específica se necessário
+  if (requiredRole && profile?.role !== requiredRole) {
+    return <Navigate to="/unauthorized" replace />;
+  }
+
   return children;
 };
 

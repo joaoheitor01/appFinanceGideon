@@ -1,93 +1,97 @@
-// src/components/LoginPage.jsx - Exemplo de uso do contexto em uma página
+// src/pages/Login.jsx
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import LoginForm from '../components/auth/LoginForm';
 
-const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Login = () => {
+  const { signIn, signInWithGoogle } = useAuth();
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const { signIn } = useAuth();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
+  const from = location.state?.from?.pathname || '/dashboard';
 
-    const result = await signIn(email, password);
-    
-    if (result.success) {
-      navigate('/dashboard'); // Redireciona para dashboard após login
-    } else {
-      setError(result.error?.message || 'Erro ao fazer login');
+  const handleSubmit = async (email, password) => {
+    try {
+      setError('');
+      setLoading(true);
+      
+      const result = await signIn(email, password);
+      
+      if (result.success) {
+        navigate(from, { replace: true });
+      } else {
+        setError(result.error || 'Erro ao fazer login');
+      }
+    } catch (error) {
+      setError('Erro inesperado. Tente novamente.');
+    } finally {
+      setLoading(false);
     }
-    
-    setIsLoading(false);
+  };
+
+  const handleGoogleLogin = async () => {
+    const result = await signInWithGoogle();
+    if (!result.success) {
+      setError(result.error);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
-        <h2 className="text-3xl font-bold text-center">Login</h2>
-        
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {error}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100">
+      <div className="max-w-md w-full mx-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              Gideon Finance
+            </h1>
+            <p className="text-gray-600">
+              Controle suas finanças de forma inteligente
+            </p>
           </div>
-        )}
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="seu@email.com"
-            />
+
+          <LoginForm
+            onSubmit={handleSubmit}
+            loading={loading}
+            error={error}
+          />
+
+          <div className="mt-6">
+            <button
+              onClick={handleGoogleLogin}
+              type="button"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+              disabled={loading}
+            >
+              <img 
+                src="https://www.google.com/favicon.ico" 
+                alt="Google" 
+                className="w-5 h-5"
+              />
+              <span>Entrar com Google</span>
+            </button>
           </div>
-          
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Senha
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="••••••••"
-            />
+
+          <div className="mt-8 text-center space-y-4">
+            <p className="text-gray-600">
+              Não tem uma conta?{' '}
+              <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium">
+                Cadastre-se
+              </Link>
+            </p>
+            
+            <p className="text-gray-600">
+              <Link to="/forgot-password" className="text-blue-600 hover:text-blue-700">
+                Esqueceu sua senha?
+              </Link>
+            </p>
           </div>
-          
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-          >
-            {isLoading ? 'Entrando...' : 'Entrar'}
-          </button>
-        </form>
-        
-        <p className="text-center text-sm text-gray-600">
-          Não tem uma conta?{' '}
-          <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
-            Cadastre-se
-          </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default Login;
