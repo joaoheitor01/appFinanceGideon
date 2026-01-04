@@ -22,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+*.log
+*.txt
+image.png
+# Adicione outras extensões problemáticas se necessário
+# Encontre e remova todos os arquivos image.png problemáticos
+find . -name "image.png" -type f -delete
+
+# Ou se quiser ver primeiro o que será removido:
+find . -name "image.png" -type f
