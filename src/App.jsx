@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './services/supabase';
-import Login from './components/Login';
-import SignUp from './components/SignUp';
-import Dashboard from './components/dashboard/Dashboard';
-import { ThemeProvider } from './contexts/ThemeContext';
+import Login from "./components/auth/Login";
+import SignUp from "./components/auth/SignUp";
+import Dashboard from "./components/dashboard/Dashboard";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import './index.css';
 
 function AppContent() {

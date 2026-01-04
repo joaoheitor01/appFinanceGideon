@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../services/supabase";
-import { useTheme } from "../contexts/ThemeContext"; // Importar o hook
+import { supabase } from "../../services/supabase";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function Login({ onToggleView }) {
   const [email, setEmail] = useState("");

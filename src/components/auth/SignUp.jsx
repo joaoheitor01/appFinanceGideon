@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { supabase } from "../services/supabase";
-import { useTheme } from "../contexts/ThemeContext";
+import { supabase } from "../../services/supabase";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function SignUp({ onToggleView }) {
   // Estados para os campos do formulário
