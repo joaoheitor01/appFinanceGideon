@@ -1,4 +1,4 @@
-// src/App.jsx - Versão atualizada com melhorias
+// src/App.jsx
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import AppRoutes from './routes/AppRoutes';
