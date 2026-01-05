@@ -1,119 +1,114 @@
+// src/components/dashboard/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from "../../services/supabase";
-import { useTheme } from "../../contexts/ThemeContext";
-import DashboardLayout from '../components/layout/DashboardLayout';
+import { supabase } from '../../services/supabase';
+import { useTheme } from '../../hooks/useTheme';
+import DashboardLayout from '../layout/DashboardLayout';
 
-// Exemplo de componentes de conteúdo
-import ResumoMensal from '../components/ResumoMensal';
-import UltimasTransacoes from '../components/UltimasTransacoes';
-
-const DashboardPage = () => {
-  // Estas funções seriam fornecidas por contextos ou props
-  const handleToggleTheme = () => {
-    // Lógica para alternar tema
-  };
-  
-  const handleLogout = () => {
-    // Lógica para logout
-  };
-
-  return (
-    <DashboardLayout
-      onToggleTheme={handleToggleTheme}
-      isDark={true} // Tema escuro padrão
-      userEmail="usuario@email.com"
-      onLogout={handleLogout}
-      userPlan="Premium"
-    >
-      {/* Coluna esquerda no desktop, topo no mobile */}
-      <ResumoMensal />
-      
-      {/* Coluna direita no desktop, abaixo no mobile */}
-      <UltimasTransacoes />
-      
-      {/* Você pode adicionar mais componentes que seguirão o grid */}
-    </DashboardLayout>
-  );
-};
+/**
+ * Dashboard - Página principal do Gideon Finance
+ * 
+ * Integra:
+ * 1. DashboardLayout para estrutura visual
+ * 2. AuthContext para autenticação
+ * 3. useTheme para controle de tema
+ * 4. Supabase para dados
+ */
 
 const Dashboard = () => {
-  const { theme, toggleTheme, isDark } = useTheme();
+  // Hook para controle de tema
+  const { isDark, toggleTheme } = useTheme();
   
-  // Use AuthContext para obter session e signOut
-  const { session, signOut, loading: authLoading, user: authUser } = useAuth();
+  // Hook para autenticação
+  const { user, signOut, loading: authLoading } = useAuth();
   
+  // Estados para dados
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showMonthDetails, setShowMonthDetails] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(null);
-  const [monthTransactions, setMonthTransactions] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
-  const [userPlan, setUserPlan] = useState('Gratuito');
+  const [loading, setLoading] = useState(true);
+  
+  // Estados para formulário
+  const [newTransaction, setNewTransaction] = useState({
+    description: '',
+    amount: '',
+    category: '',
+    date: new Date().toISOString().split('T')[0],
+    type: 'income'
+  });
 
-  // Form states
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState('');
-  const [date, setDate] = useState('');
-  const [type, setType] = useState('income');
+  // Estados para filtros e visualizações
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [showMonthDetails, setShowMonthDetails] = useState(false);
+  const [selectedMonthData, setSelectedMonthData] = useState([]);
 
-  // Carregar perfil do usuário
+  // Carregar dados iniciais
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (!authUser?.id) return;
+    if (user?.id) {
+      loadDashboardData();
+    }
+  }, [user]);
+
+  /**
+   * Carrega todos os dados necessários para o dashboard
+   */
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
       
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', authUser.id)
-          .single();
-          
-        if (error) throw error;
+      // Carregar perfil do usuário
+      await loadUserProfile();
+      
+      // Carregar transações
+      await loadTransactions();
+      
+    } catch (error) {
+      console.error('Erro ao carregar dados do dashboard:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Carrega o perfil do usuário do Supabase
+   */
+  const loadUserProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
         
-        setUserProfile(data);
-        if (data?.plan) {
-          setUserPlan(data.plan);
-        }
-      } catch (error) {
-        console.error('Erro ao buscar perfil:', error.message);
-      }
-    };
-    
-    fetchUserProfile();
-  }, [authUser]);
+      if (error) throw error;
+      setUserProfile(data);
+    } catch (error) {
+      console.error('Erro ao carregar perfil:', error);
+    }
+  };
 
-  // Carregar transações
-  useEffect(() => {
-    if (!authUser?.id) return;
-    
-    const fetchTransactions = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('transactions')
-          .select('*')
-          .eq('user_id', authUser.id)
-          .order('date', { ascending: false });
+  /**
+   * Carrega as transações do usuário
+   */
+  const loadTransactions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+        
+      if (error) throw error;
+      setTransactions(data || []);
+      setFilteredTransactions(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar transações:', error);
+    }
+  };
 
-        if (error) throw error;
-        setTransactions(data || []);
-      } catch (error) {
-        console.error('Erro ao buscar transações:', error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTransactions();
-    
-    // Definir data atual para o form
-    const today = new Date().toISOString().split('T')[0];
-    setDate(today);
-  }, [authUser]);
-
-  // Funções utilitárias
+  /**
+   * Formata valores monetários para exibição
+   */
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -121,67 +116,50 @@ const Dashboard = () => {
     }).format(value || 0);
   };
 
-  const maskCurrency = (input) => {
-    let value = input.replace(/\D/g, '');
-    value = (Number(value) / 100).toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    });
-    return value;
-  };
-
-  const parseCurrency = (valueString) => {
-    if (!valueString) return 0;
-    const cleanNumbers = valueString.replace(/\D/g, '');
-    return Number(cleanNumbers) / 100;
-  };
-
-  // Cálculos
-  const calculateSummary = () => {
-    let income = 0;
-    let expense = 0;
-
-    transactions.forEach(t => {
-      if (t.amount > 0) {
-        income += t.amount;
-      } else {
-        expense += Math.abs(t.amount);
-      }
-    });
-
+  /**
+   * Calcula os totais das transações
+   */
+  const calculateTotals = () => {
+    const income = transactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+    
+    const expense = transactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + (Math.abs(t.amount) || 0), 0);
+    
     const total = income - expense;
-
+    
     return { income, expense, total };
   };
 
+  /**
+   * Agrupa transações por mês
+   */
   const getMonthlySummary = () => {
     const months = [
       'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
       'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
     ];
-
-    const now = new Date();
-    const currentYear = now.getFullYear();
+    
+    const currentYear = new Date().getFullYear();
     
     return months.map((monthName, index) => {
       const monthTransactions = transactions.filter(t => {
         const date = new Date(t.date);
         return date.getMonth() === index && date.getFullYear() === currentYear;
       });
-
-      let income = 0;
-      let expense = 0;
-
-      monthTransactions.forEach(t => {
-        if (t.amount > 0) {
-          income += t.amount;
-        } else {
-          expense += Math.abs(t.amount);
-        }
-      });
-
+      
+      const income = monthTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + (t.amount || 0), 0);
+      
+      const expense = monthTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + (Math.abs(t.amount) || 0), 0);
+      
       const balance = income - expense;
-
+      
       return {
         name: monthName,
         income,
@@ -192,52 +170,65 @@ const Dashboard = () => {
     });
   };
 
+  /**
+   * Filtra transações pelo mês selecionado
+   */
+  const filterByMonth = (monthIndex) => {
+    setCurrentMonth(monthIndex);
+    const monthData = getMonthlySummary()[monthIndex];
+    setSelectedMonthData(monthData.transactions);
+    setShowMonthDetails(true);
+  };
+
+  /**
+   * Adiciona uma nova transação
+   */
   const handleAddTransaction = async (e) => {
     e.preventDefault();
     
-    if (!description || !amount || !date) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
+    if (!newTransaction.description || !newTransaction.amount) {
+      alert('Por favor, preencha a descrição e o valor.');
       return;
     }
 
-    const amountValue = parseCurrency(amount);
-    const finalAmount = type === 'expense' ? amountValue * -1 : amountValue;
-
     try {
+      const amountValue = parseFloat(newTransaction.amount);
+      const finalAmount = newTransaction.type === 'expense' ? -Math.abs(amountValue) : Math.abs(amountValue);
+      
       const { error } = await supabase
         .from('transactions')
         .insert([{
-          user_id: authUser.id,
-          description,
+          user_id: user.id,
+          description: newTransaction.description,
           amount: finalAmount,
-          category: category || 'Outros',
-          date,
-          type
+          category: newTransaction.category || 'Outros',
+          date: newTransaction.date,
+          type: newTransaction.type
         }]);
 
       if (error) throw error;
 
-      // Reset form
-      setDescription('');
-      setAmount('');
-      setCategory('');
-      setType('income');
+      // Resetar formulário
+      setNewTransaction({
+        description: '',
+        amount: '',
+        category: '',
+        date: new Date().toISOString().split('T')[0],
+        type: 'income'
+      });
 
       // Recarregar transações
-      const { data } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('user_id', authUser.id)
-        .order('date', { ascending: false });
-        
-      setTransactions(data || []);
+      await loadTransactions();
       
     } catch (error) {
-      console.error('Erro ao adicionar transação:', error.message);
-      alert('Erro ao salvar transação.');
+      console.error('Erro ao adicionar transação:', error);
+      alert('Erro ao salvar transação. Tente novamente.');
     }
   };
 
+  /**
+   * Exclui uma transação
+   */
   const handleDeleteTransaction = async (id) => {
     if (!confirm('Tem certeza que deseja excluir esta transação?')) {
       return;
@@ -253,116 +244,188 @@ const Dashboard = () => {
 
       // Atualizar lista local
       setTransactions(transactions.filter(t => t.id !== id));
-      if (showMonthDetails) {
-        setMonthTransactions(monthTransactions.filter(t => t.id !== id));
-      }
+      setFilteredTransactions(filteredTransactions.filter(t => t.id !== id));
       
     } catch (error) {
-      console.error('Erro ao excluir transação:', error.message);
-      alert('Erro ao excluir transação.');
+      console.error('Erro ao excluir transação:', error);
+      alert('Erro ao excluir transação. Tente novamente.');
     }
   };
 
-  const handleMonthClick = (monthData) => {
-    setSelectedMonth(monthData.name);
-    setMonthTransactions(monthData.transactions);
-    setShowMonthDetails(true);
-  };
-
-  const handleCloseMonthDetails = () => {
-    setShowMonthDetails(false);
-    setSelectedMonth(null);
-    setMonthTransactions([]);
-  };
-
-  const handleLogout = async () => {
-    await signOut();
-  };
-
-  // Verificar se está carregando
-  if (authLoading) {
+  // Carregamento inicial
+  if (authLoading || loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: isDark ? '#0f172a' : '#f8fafc'
+      }}>
+        <div style={{
+          width: '50px',
+          height: '50px',
+          border: '5px solid #f3f3f3',
+          borderTop: '5px solid #3b82f6',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
 
-  // Verificar se usuário está autenticado
-  if (!authUser) {
-    return null; // Redirecionamento será feito pelo ProtectedRoute
-  }
+  // Dados calculados
+  const totals = calculateTotals();
+  const monthlySummary = getMonthlySummary();
 
-  const summary = calculateSummary();
-  const monthlyData = getMonthlySummary();
-
-  // Modal para detalhes do mês
+  // Componente para exibir detalhes do mês
   const MonthDetailsModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-              Transações de {selectedMonth}
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000,
+      padding: '20px'
+    }}>
+      <div style={{
+        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+        borderRadius: '12px',
+        maxWidth: '800px',
+        width: '100%',
+        maxHeight: '90vh',
+        overflow: 'hidden'
+      }}>
+        <div style={{ padding: '24px' }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '24px'
+          }}>
+            <h2 style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: isDark ? '#ffffff' : '#1e293b'
+            }}>
+              Transações de {monthlySummary[currentMonth].name}
             </h2>
             <button
-              onClick={handleCloseMonthDetails}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              onClick={() => setShowMonthDetails(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                color: isDark ? '#94a3b8' : '#64748b'
+              }}
             >
               ✕
             </button>
           </div>
           
-          {monthTransactions.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+          {selectedMonthData.length === 0 ? (
+            <p style={{
+              textAlign: 'center',
+              color: isDark ? '#94a3b8' : '#64748b',
+              padding: '40px 0'
+            }}>
               Nenhuma transação neste mês
             </p>
           ) : (
-            <div className="overflow-y-auto max-h-[60vh]">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-700">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            <div style={{ overflowY: 'auto', maxHeight: '60vh' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{
+                    borderBottom: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+                  }}>
+                    <th style={{
+                      padding: '12px',
+                      textAlign: 'left',
+                      fontWeight: '600',
+                      color: isDark ? '#cbd5e1' : '#475569'
+                    }}>
                       Descrição
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th style={{
+                      padding: '12px',
+                      textAlign: 'left',
+                      fontWeight: '600',
+                      color: isDark ? '#cbd5e1' : '#475569'
+                    }}>
                       Categoria
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th style={{
+                      padding: '12px',
+                      textAlign: 'right',
+                      fontWeight: '600',
+                      color: isDark ? '#cbd5e1' : '#475569'
+                    }}>
                       Valor
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th style={{
+                      padding: '12px',
+                      textAlign: 'left',
+                      fontWeight: '600',
+                      color: isDark ? '#cbd5e1' : '#475569'
+                    }}>
                       Data
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th style={{
+                      padding: '12px',
+                      textAlign: 'center',
+                      fontWeight: '600',
+                      color: isDark ? '#cbd5e1' : '#475569'
+                    }}>
                       Ações
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {monthTransactions.map((transaction) => (
-                    <tr key={transaction.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                <tbody>
+                  {selectedMonthData.map((transaction) => (
+                    <tr key={transaction.id} style={{
+                      borderBottom: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+                    }}>
+                      <td style={{ padding: '12px', color: isDark ? '#e2e8f0' : '#1e293b' }}>
                         {transaction.description}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                      <td style={{ padding: '12px', color: isDark ? '#94a3b8' : '#64748b' }}>
                         {transaction.category}
                       </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
-                        transaction.amount >= 0 
-                          ? 'text-green-600 dark:text-green-400' 
-                          : 'text-red-600 dark:text-red-400'
-                      }`}>
+                      <td style={{
+                        padding: '12px',
+                        textAlign: 'right',
+                        fontWeight: '500',
+                        color: transaction.amount >= 0 
+                          ? (isDark ? '#86efac' : '#16a34a')
+                          : (isDark ? '#fca5a5' : '#dc2626')
+                      }}>
                         {formatCurrency(transaction.amount)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                      <td style={{ padding: '12px', color: isDark ? '#94a3b8' : '#64748b' }}>
                         {new Date(transaction.date).toLocaleDateString('pt-BR')}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <td style={{ padding: '12px', textAlign: 'center' }}>
                         <button
                           onClick={() => handleDeleteTransaction(transaction.id)}
-                          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                          title="Excluir"
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: isDark ? '#fca5a5' : '#dc2626',
+                            fontWeight: '500'
+                          }}
                         >
                           Excluir
                         </button>
@@ -374,10 +437,22 @@ const Dashboard = () => {
             </div>
           )}
           
-          <div className="mt-6 flex justify-end">
+          <div style={{
+            marginTop: '24px',
+            display: 'flex',
+            justifyContent: 'flex-end'
+          }}>
             <button
-              onClick={handleCloseMonthDetails}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+              onClick={() => setShowMonthDetails(false)}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: isDark ? '#334155' : '#e2e8f0',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                color: isDark ? '#e2e8f0' : '#1e293b',
+                fontWeight: '500'
+              }}
             >
               Fechar
             </button>
@@ -388,526 +463,639 @@ const Dashboard = () => {
   );
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${
-      isDark ? 'dark bg-gray-900' : 'bg-gray-50'
-    }`}>
-      {/* Header */}
-      <header className={`sticky top-0 z-40 shadow-md transition-colors duration-200 ${
-        isDark ? 'bg-gray-800' : 'bg-white'
-      }`}>
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <h1 className={`text-2xl font-bold ${
-              isDark ? 'text-white' : 'text-gray-800'
-            }`}>
-              Gideon Finance
-            </h1>
-            <span className={`text-sm ${
-              isDark ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              Controle Financeiro
+    <DashboardLayout
+      onToggleTheme={toggleTheme}
+      isDark={isDark}
+      userEmail={user?.email || 'usuário@email.com'}
+      onLogout={signOut}
+      userPlan={userProfile?.plan || 'Gratuito'}
+    >
+      {/* Conteúdo do Dashboard organizado em cards */}
+      
+      {/* Cards de Resumo */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '24px',
+        marginBottom: '32px'
+      }}>
+        {/* Card Saldo Total */}
+        <div style={{
+          backgroundColor: isDark ? '#1e293b' : '#ffffff',
+          borderRadius: '12px',
+          padding: '24px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '16px'
+          }}>
+            <h3 style={{
+              fontSize: '16px',
+              fontWeight: '600',
+              color: isDark ? '#cbd5e1' : '#475569'
+            }}>
+              Saldo Total
+            </h3>
+            <div style={{
+              padding: '12px',
+              borderRadius: '50%',
+              backgroundColor: isDark ? '#1e40af' : '#dbeafe'
+            }}>
+              <span style={{ fontSize: '20px' }}>💰</span>
+            </div>
+          </div>
+          <div style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: totals.total >= 0 
+              ? (isDark ? '#86efac' : '#16a34a')
+              : (isDark ? '#fca5a5' : '#dc2626')
+          }}>
+            {formatCurrency(totals.total)}
+          </div>
+        </div>
+
+        {/* Card Entradas */}
+        <div style={{
+          backgroundColor: isDark ? '#1e293b' : '#ffffff',
+          borderRadius: '12px',
+          padding: '24px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '16px'
+          }}>
+            <h3 style={{
+              fontSize: '16px',
+              fontWeight: '600',
+              color: isDark ? '#cbd5e1' : '#475569'
+            }}>
+              Entradas
+            </h3>
+            <div style={{
+              padding: '12px',
+              borderRadius: '50%',
+              backgroundColor: isDark ? '#065f46' : '#d1fae5'
+            }}>
+              <span style={{ fontSize: '20px', color: isDark ? '#34d399' : '#10b981' }}>↑</span>
+            </div>
+          </div>
+          <div style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: isDark ? '#34d399' : '#10b981'
+          }}>
+            {formatCurrency(totals.income)}
+          </div>
+        </div>
+
+        {/* Card Saídas */}
+        <div style={{
+          backgroundColor: isDark ? '#1e293b' : '#ffffff',
+          borderRadius: '12px',
+          padding: '24px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '16px'
+          }}>
+            <h3 style={{
+              fontSize: '16px',
+              fontWeight: '600',
+              color: isDark ? '#cbd5e1' : '#475569'
+            }}>
+              Saídas
+            </h3>
+            <div style={{
+              padding: '12px',
+              borderRadius: '50%',
+              backgroundColor: isDark ? '#7f1d1d' : '#fee2e2'
+            }}>
+              <span style={{ fontSize: '20px', color: isDark ? '#f87171' : '#dc2626' }}>↓</span>
+            </div>
+          </div>
+          <div style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: isDark ? '#f87171' : '#dc2626'
+          }}>
+            {formatCurrency(totals.expense)}
+          </div>
+        </div>
+      </div>
+
+      {/* Formulário de Nova Transação */}
+      <div style={{
+        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+        borderRadius: '12px',
+        padding: '24px',
+        marginBottom: '32px',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+      }}>
+        <h2 style={{
+          fontSize: '20px',
+          fontWeight: '600',
+          marginBottom: '24px',
+          color: isDark ? '#ffffff' : '#1e293b'
+        }}>
+          Nova Transação
+        </h2>
+        
+        <form onSubmit={handleAddTransaction}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '16px',
+            marginBottom: '24px'
+          }}>
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                marginBottom: '8px',
+                color: isDark ? '#cbd5e1' : '#475569'
+              }}>
+                Descrição *
+              </label>
+              <input
+                type="text"
+                value={newTransaction.description}
+                onChange={(e) => setNewTransaction({
+                  ...newTransaction,
+                  description: e.target.value
+                })}
+                required
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  border: `1px solid ${isDark ? '#475569' : '#cbd5e1'}`,
+                  backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                  color: isDark ? '#ffffff' : '#1e293b',
+                  fontSize: '14px'
+                }}
+                placeholder="Ex: Salário, Mercado, etc."
+              />
+            </div>
+
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                marginBottom: '8px',
+                color: isDark ? '#cbd5e1' : '#475569'
+              }}>
+                Valor (R$) *
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                value={newTransaction.amount}
+                onChange={(e) => setNewTransaction({
+                  ...newTransaction,
+                  amount: e.target.value
+                })}
+                required
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  border: `1px solid ${isDark ? '#475569' : '#cbd5e1'}`,
+                  backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                  color: isDark ? '#ffffff' : '#1e293b',
+                  fontSize: '14px'
+                }}
+                placeholder="0,00"
+              />
+            </div>
+
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                marginBottom: '8px',
+                color: isDark ? '#cbd5e1' : '#475569'
+              }}>
+                Categoria
+              </label>
+              <select
+                value={newTransaction.category}
+                onChange={(e) => setNewTransaction({
+                  ...newTransaction,
+                  category: e.target.value
+                })}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  border: `1px solid ${isDark ? '#475569' : '#cbd5e1'}`,
+                  backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                  color: isDark ? '#ffffff' : '#1e293b',
+                  fontSize: '14px'
+                }}
+              >
+                <option value="">Selecione...</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Moradia">Moradia</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Lazer">Lazer</option>
+                <option value="Saúde">Saúde</option>
+                <option value="Educação">Educação</option>
+                <option value="Outros">Outros</option>
+              </select>
+            </div>
+
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                marginBottom: '8px',
+                color: isDark ? '#cbd5e1' : '#475569'
+              }}>
+                Tipo
+              </label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={() => setNewTransaction({
+                    ...newTransaction,
+                    type: 'income'
+                  })}
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: '500',
+                    backgroundColor: newTransaction.type === 'income'
+                      ? (isDark ? '#065f46' : '#10b981')
+                      : (isDark ? '#334155' : '#e2e8f0'),
+                    color: newTransaction.type === 'income' ? '#ffffff' : (isDark ? '#cbd5e1' : '#475569')
+                  }}
+                >
+                  Entrada
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNewTransaction({
+                    ...newTransaction,
+                    type: 'expense'
+                  })}
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: '500',
+                    backgroundColor: newTransaction.type === 'expense'
+                      ? (isDark ? '#7f1d1d' : '#dc2626')
+                      : (isDark ? '#334155' : '#e2e8f0'),
+                    color: newTransaction.type === 'expense' ? '#ffffff' : (isDark ? '#cbd5e1' : '#475569')
+                  }}
+                >
+                  Saída
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label style={{
+                display: 'block',
+                fontSize: '14px',
+                fontWeight: '500',
+                marginBottom: '8px',
+                color: isDark ? '#cbd5e1' : '#475569'
+              }}>
+                Data
+              </label>
+              <input
+                type="date"
+                value={newTransaction.date}
+                onChange={(e) => setNewTransaction({
+                  ...newTransaction,
+                  date: e.target.value
+                })}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  borderRadius: '6px',
+                  border: `1px solid ${isDark ? '#475569' : '#cbd5e1'}`,
+                  backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                  color: isDark ? '#ffffff' : '#1e293b',
+                  fontSize: '14px'
+                }}
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            style={{
+              padding: '12px 24px',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: '500',
+              fontSize: '14px',
+              backgroundColor: newTransaction.type === 'income'
+                ? (isDark ? '#10b981' : '#059669')
+                : (isDark ? '#ef4444' : '#dc2626'),
+              color: '#ffffff'
+            }}
+          >
+            Adicionar Transação
+          </button>
+        </form>
+      </div>
+
+      {/* Grid Principal - Resumo Mensal e Últimas Transações */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '24px'
+      }}>
+        {/* Coluna 1: Resumo Mensal */}
+        <div style={{
+          backgroundColor: isDark ? '#1e293b' : '#ffffff',
+          borderRadius: '12px',
+          padding: '24px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '24px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: isDark ? '#ffffff' : '#1e293b'
+            }}>
+              Resumo Mensal
+            </h3>
+            <span style={{
+              fontSize: '12px',
+              color: isDark ? '#94a3b8' : '#64748b'
+            }}>
+              Clique em um mês para ver detalhes
             </span>
           </div>
           
-          <div className="flex items-center space-x-4">
-            {/* Botão de alternância de tema */}
-            <button 
-              onClick={toggleTheme} 
-              className={`p-2 rounded-lg transition ${
-                isDark 
-                  ? 'bg-gray-700 hover:bg-gray-600 text-yellow-400' 
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-              }`}
-              title={isDark ? 'Alternar para modo claro' : 'Alternar para modo escuro'}
-            >
-              {isDark ? '☀️' : '🌙'}
-            </button>
-            
-            <div className={`hidden md:flex flex-col items-end ${
-              isDark ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              <div className="font-medium">{authUser?.email}</div>
-              <div className="text-sm opacity-75">Plano: {userPlan}</div>
-            </div>
-            
-            <button 
-              onClick={handleLogout}
-              className={`px-4 py-2 rounded-lg font-medium transition ${
-                isDark 
-                  ? 'bg-red-600 hover:bg-red-700 text-white' 
-                  : 'bg-red-500 hover:bg-red-600 text-white'
-              }`}
-            >
-              Sair
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Conteúdo Principal */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className={`text-3xl font-bold mb-2 ${
-            isDark ? 'text-white' : 'text-gray-800'
-          }`}>
-            Dashboard Financeiro
-          </h1>
-          <p className={`${
-            isDark ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            Gerencie suas receitas e despesas com facilidade
-          </p>
-        </div>
-
-        {/* Cards de Resumo */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Card Entradas */}
-          <div className={`rounded-xl shadow-lg p-6 transition ${
-            isDark ? 'bg-gray-800' : 'bg-white'
-          }`}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className={`font-semibold ${
-                isDark ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Entradas
-              </h3>
-              <div className={`p-3 rounded-full ${
-                isDark ? 'bg-green-900/30' : 'bg-green-100'
-              }`}>
-                <span className="text-green-500 text-xl">↑</span>
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-green-500">
-              {formatCurrency(summary.income)}
-            </div>
-          </div>
-
-          {/* Card Saídas */}
-          <div className={`rounded-xl shadow-lg p-6 transition ${
-            isDark ? 'bg-gray-800' : 'bg-white'
-          }`}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className={`font-semibold ${
-                isDark ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Saídas
-              </h3>
-              <div className={`p-3 rounded-full ${
-                isDark ? 'bg-red-900/30' : 'bg-red-100'
-              }`}>
-                <span className="text-red-500 text-xl">↓</span>
-              </div>
-            </div>
-            <div className="text-3xl font-bold text-red-500">
-              {formatCurrency(summary.expense)}
-            </div>
-          </div>
-
-          {/* Card Saldo Total */}
-          <div className={`rounded-xl shadow-lg p-6 transition ${
-            isDark ? 'bg-gray-800' : 'bg-white'
-          }`}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className={`font-semibold ${
-                isDark ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Saldo Total
-              </h3>
-              <div className={`p-3 rounded-full ${
-                isDark ? 'bg-blue-900/30' : 'bg-blue-100'
-              }`}>
-                <span className="text-blue-500 text-xl">⚖️</span>
-              </div>
-            </div>
-            <div className={`text-3xl font-bold ${
-              summary.total >= 0 ? 'text-green-500' : 'text-red-500'
-            }`}>
-              {formatCurrency(summary.total)}
-            </div>
-          </div>
-        </div>
-
-        {/* Formulário de Nova Transação */}
-        <div className={`mb-8 rounded-xl shadow-lg p-6 transition ${
-          isDark ? 'bg-gray-800' : 'bg-white'
-        }`}>
-          <h2 className={`text-xl font-semibold mb-4 ${
-            isDark ? 'text-white' : 'text-gray-800'
-          }`}>
-            Nova Transação
-          </h2>
-          
-          <div className="flex space-x-2 mb-6">
-            <button
-              onClick={() => setType('income')}
-              className={`px-6 py-2 rounded-lg font-medium transition ${
-                type === 'income'
-                  ? isDark
-                    ? 'bg-green-700 text-white'
-                    : 'bg-green-500 text-white'
-                  : isDark
-                    ? 'bg-gray-700 text-gray-300'
-                    : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Entrada
-            </button>
-            <button
-              onClick={() => setType('expense')}
-              className={`px-6 py-2 rounded-lg font-medium transition ${
-                type === 'expense'
-                  ? isDark
-                    ? 'bg-red-700 text-white'
-                    : 'bg-red-500 text-white'
-                  : isDark
-                    ? 'bg-gray-700 text-gray-300'
-                    : 'bg-gray-200 text-gray-700'
-              }`}
-            >
-              Saída
-            </button>
-          </div>
-
-          <form onSubmit={handleAddTransaction}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${
-                  isDark ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Descrição
-                </label>
-                <input
-                  type="text"
-                  className={`w-full px-4 py-2 rounded-lg border transition ${
-                    isDark
-                      ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500'
-                      : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                  }`}
-                  placeholder="Ex: Salário, Mercado, etc."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${
-                  isDark ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Valor (R$)
-                </label>
-                <input
-                  type="text"
-                  className={`w-full px-4 py-2 rounded-lg border transition ${
-                    isDark
-                      ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500'
-                      : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                  }`}
-                  placeholder="0,00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  onBlur={(e) => {
-                    if (e.target.value) {
-                      e.target.value = maskCurrency(e.target.value);
-                    }
-                  }}
-                  required
-                />
-              </div>
-
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${
-                  isDark ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Categoria
-                </label>
-                <div className="flex space-x-2">
-                  <select 
-                    className={`flex-grow px-4 py-2 rounded-lg border transition ${
-                      isDark
-                        ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500'
-                        : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                    }`}
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                  >
-                    <option value="">Selecione...</option>
-                    <option value="Alimentação">Alimentação</option>
-                    <option value="Moradia">Moradia</option>
-                    <option value="Transporte">Transporte</option>
-                    <option value="Lazer">Lazer</option>
-                    <option value="Saúde">Saúde</option>
-                    <option value="Educação">Educação</option>
-                    <option value="Outros">Outros</option>
-                  </select>
-                  <button 
-                    type="button" 
-                    className={`px-3 py-2 rounded-lg font-medium transition ${
-                      isDark
-                        ? 'bg-gray-700 hover:bg-gray-600 text-white'
-                        : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                    }`}
-                    onClick={() => {
-                      const newCat = prompt('Nova categoria:');
-                      if (newCat) {
-                        setCategory(newCat);
-                      }
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{
+                  borderBottom: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+                }}>
+                  <th style={{
+                    padding: '12px',
+                    textAlign: 'left',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    color: isDark ? '#cbd5e1' : '#475569'
+                  }}>
+                    Mês
+                  </th>
+                  <th style={{
+                    padding: '12px',
+                    textAlign: 'right',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    color: isDark ? '#cbd5e1' : '#475569'
+                  }}>
+                    Entradas
+                  </th>
+                  <th style={{
+                    padding: '12px',
+                    textAlign: 'right',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    color: isDark ? '#cbd5e1' : '#475569'
+                  }}>
+                    Saídas
+                  </th>
+                  <th style={{
+                    padding: '12px',
+                    textAlign: 'right',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    color: isDark ? '#cbd5e1' : '#475569'
+                  }}>
+                    Saldo
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {monthlySummary.map((month, index) => (
+                  <tr 
+                    key={index}
+                    onClick={() => filterByMonth(index)}
+                    style={{
+                      borderBottom: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`,
+                      cursor: month.transactions.length > 0 ? 'pointer' : 'default',
+                      opacity: month.transactions.length === 0 ? 0.6 : 1
                     }}
                   >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className={`block text-sm font-medium mb-1 ${
-                  isDark ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                  Data
-                </label>
-                <input
-                  type="date"
-                  className={`w-full px-4 py-2 rounded-lg border transition ${
-                    isDark
-                      ? 'bg-gray-700 border-gray-600 text-white focus:ring-blue-500 focus:border-blue-500'
-                      : 'bg-white border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                  }`}
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className={`px-6 py-3 rounded-lg font-medium transition ${
-                type === 'income'
-                  ? isDark
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'bg-green-500 hover:bg-green-600 text-white'
-                  : isDark
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-red-500 hover:bg-red-600 text-white'
-              }`}
-            >
-              Adicionar Transação
-            </button>
-          </form>
+                    <td style={{
+                      padding: '12px',
+                      color: isDark ? '#e2e8f0' : '#1e293b',
+                      fontWeight: '500'
+                    }}>
+                      {month.name}
+                    </td>
+                    <td style={{
+                      padding: '12px',
+                      textAlign: 'right',
+                      fontWeight: '500',
+                      color: isDark ? '#34d399' : '#10b981'
+                    }}>
+                      {formatCurrency(month.income)}
+                    </td>
+                    <td style={{
+                      padding: '12px',
+                      textAlign: 'right',
+                      fontWeight: '500',
+                      color: isDark ? '#f87171' : '#dc2626'
+                    }}>
+                      {formatCurrency(month.expense)}
+                    </td>
+                    <td style={{
+                      padding: '12px',
+                      textAlign: 'right',
+                      fontWeight: '600',
+                      color: month.balance >= 0 
+                        ? (isDark ? '#34d399' : '#10b981')
+                        : (isDark ? '#f87171' : '#dc2626')
+                    }}>
+                      {formatCurrency(month.balance)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        {/* Tabelas */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Resumo Mensal */}
-          <div className={`rounded-xl shadow-lg p-6 transition ${
-            isDark ? 'bg-gray-800' : 'bg-white'
-          }`}>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className={`text-xl font-semibold ${
-                isDark ? 'text-white' : 'text-gray-800'
-              }`}>
-                Resumo Mensal
-              </h3>
-              <span className={`text-sm ${
-                isDark ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                Clique em um mês para ver detalhes
-              </span>
-            </div>
-            
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
+        {/* Coluna 2: Últimas Transações */}
+        <div style={{
+          backgroundColor: isDark ? '#1e293b' : '#ffffff',
+          borderRadius: '12px',
+          padding: '24px',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          border: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+        }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '24px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: isDark ? '#ffffff' : '#1e293b'
+            }}>
+              Últimas Transações
+            </h3>
+            <span style={{
+              fontSize: '12px',
+              color: isDark ? '#94a3b8' : '#64748b'
+            }}>
+              {transactions.length} transações
+            </span>
+          </div>
+          
+          {transactions.length === 0 ? (
+            <p style={{
+              textAlign: 'center',
+              color: isDark ? '#94a3b8' : '#64748b',
+              padding: '40px 0'
+            }}>
+              Nenhuma transação cadastrada
+            </p>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr className={`border-b ${
-                    isDark ? 'border-gray-700' : 'border-gray-200'
-                  }`}>
-                    <th className={`text-left py-3 px-4 font-medium ${
-                      isDark ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      Mês
+                  <tr style={{
+                    borderBottom: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+                  }}>
+                    <th style={{
+                      padding: '12px',
+                      textAlign: 'left',
+                      fontWeight: '600',
+                      fontSize: '14px',
+                      color: isDark ? '#cbd5e1' : '#475569'
+                    }}>
+                      Descrição
                     </th>
-                    <th className={`text-right py-3 px-4 font-medium ${
-                      isDark ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      Entradas
+                    <th style={{
+                      padding: '12px',
+                      textAlign: 'left',
+                      fontWeight: '600',
+                      fontSize: '14px',
+                      color: isDark ? '#cbd5e1' : '#475569'
+                    }}>
+                      Categoria
                     </th>
-                    <th className={`text-right py-3 px-4 font-medium ${
-                      isDark ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      Saídas
+                    <th style={{
+                      padding: '12px',
+                      textAlign: 'right',
+                      fontWeight: '600',
+                      fontSize: '14px',
+                      color: isDark ? '#cbd5e1' : '#475569'
+                    }}>
+                      Valor
                     </th>
-                    <th className={`text-right py-3 px-4 font-medium ${
-                      isDark ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      Saldo
+                    <th style={{
+                      padding: '12px',
+                      textAlign: 'left',
+                      fontWeight: '600',
+                      fontSize: '14px',
+                      color: isDark ? '#cbd5e1' : '#475569'
+                    }}>
+                      Ações
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {monthlyData.map((month, index) => (
-                    <tr 
-                      key={index}
-                      onClick={() => handleMonthClick(month)}
-                      className={`cursor-pointer transition hover:opacity-80 ${
-                        isDark 
-                          ? 'hover:bg-gray-700' 
-                          : 'hover:bg-gray-50'
-                      } ${month.transactions.length === 0 ? 'opacity-60' : ''}`}
-                    >
-                      <td className={`py-3 px-4 ${
-                        isDark ? 'text-gray-300' : 'text-gray-800'
-                      }`}>
-                        {month.name}
+                  {transactions.slice(0, 8).map((transaction) => (
+                    <tr key={transaction.id} style={{
+                      borderBottom: `1px solid ${isDark ? '#334155' : '#e2e8f0'}`
+                    }}>
+                      <td style={{
+                        padding: '12px',
+                        color: isDark ? '#e2e8f0' : '#1e293b',
+                        fontWeight: '500'
+                      }}>
+                        {transaction.description}
                       </td>
-                      <td className={`py-3 px-4 text-right font-medium ${
-                        month.income > 0 ? 'text-green-500' : ''
-                      }`}>
-                        {formatCurrency(month.income)}
+                      <td style={{
+                        padding: '12px',
+                        color: isDark ? '#94a3b8' : '#64748b'
+                      }}>
+                        {transaction.category}
                       </td>
-                      <td className={`py-3 px-4 text-right font-medium ${
-                        month.expense > 0 ? 'text-red-500' : ''
-                      }`}>
-                        {formatCurrency(month.expense)}
+                      <td style={{
+                        padding: '12px',
+                        textAlign: 'right',
+                        fontWeight: '500',
+                        color: transaction.amount >= 0 
+                          ? (isDark ? '#34d399' : '#10b981')
+                          : (isDark ? '#f87171' : '#dc2626')
+                      }}>
+                        {formatCurrency(transaction.amount)}
                       </td>
-                      <td className={`py-3 px-4 text-right font-medium ${
-                        month.balance >= 0 ? 'text-green-500' : 'text-red-500'
-                      }`}>
-                        {formatCurrency(month.balance)}
+                      <td style={{ padding: '12px' }}>
+                        <button
+                          onClick={() => handleDeleteTransaction(transaction.id)}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontWeight: '500',
+                            fontSize: '12px',
+                            backgroundColor: isDark ? '#7f1d1d' : '#fee2e2',
+                            color: isDark ? '#fca5a5' : '#dc2626'
+                          }}
+                        >
+                          Excluir
+                        </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </div>
-
-          {/* Últimas Transações */}
-          <div className={`rounded-xl shadow-lg p-6 transition ${
-            isDark ? 'bg-gray-800' : 'bg-white'
-          }`}>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className={`text-xl font-semibold ${
-                isDark ? 'text-white' : 'text-gray-800'
-              }`}>
-                Últimas Transações
-              </h3>
-              <span className={`text-sm ${
-                isDark ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                {transactions.length} transações encontradas
-              </span>
-            </div>
-            
-            <div className="overflow-x-auto">
-              {loading ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-                  <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Carregando transações...
-                  </p>
-                </div>
-              ) : transactions.length === 0 ? (
-                <p className={`text-center py-8 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Nenhuma transação cadastrada
-                </p>
-              ) : (
-                <table className="min-w-full">
-                  <thead>
-                    <tr className={`border-b ${
-                      isDark ? 'border-gray-700' : 'border-gray-200'
-                    }`}>
-                      <th className={`text-left py-3 px-4 font-medium ${
-                        isDark ? 'text-gray-300' : 'text-gray-700'
-                      }`}>
-                        Descrição
-                      </th>
-                      <th className={`text-left py-3 px-4 font-medium ${
-                        isDark ? 'text-gray-300' : 'text-gray-700'
-                      }`}>
-                        Categoria
-                      </th>
-                      <th className={`text-right py-3 px-4 font-medium ${
-                        isDark ? 'text-gray-300' : 'text-gray-700'
-                      }`}>
-                        Valor
-                      </th>
-                      <th className={`text-left py-3 px-4 font-medium ${
-                        isDark ? 'text-gray-300' : 'text-gray-700'
-                      }`}>
-                        Data
-                      </th>
-                      <th className={`text-left py-3 px-4 font-medium ${
-                        isDark ? 'text-gray-300' : 'text-gray-700'
-                      }`}></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {transactions.slice(0, 10).map((transaction) => (
-                      <tr 
-                        key={transaction.id}
-                        className={`border-b ${
-                          isDark ? 'border-gray-700' : 'border-gray-200'
-                        }`}
-                      >
-                        <td className={`py-3 px-4 ${
-                          isDark ? 'text-gray-300' : 'text-gray-800'
-                        }`}>
-                          {transaction.description}
-                        </td>
-                        <td className={`py-3 px-4 ${
-                          isDark ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                          {transaction.category}
-                        </td>
-                        <td className={`py-3 px-4 text-right font-medium ${
-                          transaction.amount >= 0 ? 'text-green-500' : 'text-red-500'
-                        }`}>
-                          {formatCurrency(transaction.amount)}
-                        </td>
-                        <td className={`py-3 px-4 ${
-                          isDark ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                          {new Date(transaction.date).toLocaleDateString('pt-BR')}
-                        </td>
-                        <td className="py-3 px-4">
-                          <button
-                            onClick={() => handleDeleteTransaction(transaction.id)}
-                            className={`font-medium ${
-                              isDark 
-                                ? 'text-red-400 hover:text-red-300' 
-                                : 'text-red-500 hover:text-red-700'
-                            }`}
-                            title="Excluir"
-                          >
-                            Excluir
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
+          )}
         </div>
-      </main>
+      </div>
 
       {/* Modal de detalhes do mês */}
       {showMonthDetails && <MonthDetailsModal />}
-
-      {/* Footer */}
-      <footer className={`mt-12 py-6 border-t transition ${
-        isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
-      }`}>
-        <div className="container mx-auto px-4 text-center">
-          <p className={`${
-            isDark ? 'text-gray-400' : 'text-gray-600'
-          }`}>
-            © {new Date().getFullYear()} Gideon Finance - Todos os direitos reservados
-          </p>
-        </div>
-      </footer>
-    </div>
+    </DashboardLayout>
   );
 };
 
