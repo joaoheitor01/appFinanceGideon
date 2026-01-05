@@ -74,24 +74,13 @@ const GlobalError = ({ error, resetError }) => (
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        {/* Mantém a estrutura atual */}
-        <AppRoutes />
-        
-        {/* Adiciona componentes úteis que não interferem na lógica existente */}
-        
-        {/* Exemplo: Adicione um Toast/Notification Provider se necessário */}
-        {/* <ToastProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <BrowserRouter>
           <AppRoutes />
-        </ToastProvider> */}
-        
-        {/* Exemplo: Adicione um Theme Provider se necessário */}
-        {/* <ThemeProvider>
-          <AppRoutes />
-        </ThemeProvider> */}
-      </BrowserRouter>
-    </AuthProvider>
+        </BrowserRouter>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
