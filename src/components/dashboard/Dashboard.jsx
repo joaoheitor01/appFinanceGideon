@@ -2,6 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from "../../services/supabase";
 import { useTheme } from "../../contexts/ThemeContext";
+import DashboardLayout from '../components/layout/DashboardLayout';
+
+// Exemplo de componentes de conteúdo
+import ResumoMensal from '../components/ResumoMensal';
+import UltimasTransacoes from '../components/UltimasTransacoes';
+
+const DashboardPage = () => {
+  // Estas funções seriam fornecidas por contextos ou props
+  const handleToggleTheme = () => {
+    // Lógica para alternar tema
+  };
+  
+  const handleLogout = () => {
+    // Lógica para logout
+  };
+
+  return (
+    <DashboardLayout
+      onToggleTheme={handleToggleTheme}
+      isDark={true} // Tema escuro padrão
+      userEmail="usuario@email.com"
+      onLogout={handleLogout}
+      userPlan="Premium"
+    >
+      {/* Coluna esquerda no desktop, topo no mobile */}
+      <ResumoMensal />
+      
+      {/* Coluna direita no desktop, abaixo no mobile */}
+      <UltimasTransacoes />
+      
+      {/* Você pode adicionar mais componentes que seguirão o grid */}
+    </DashboardLayout>
+  );
+};
 
 const Dashboard = () => {
   const { theme, toggleTheme, isDark } = useTheme();
