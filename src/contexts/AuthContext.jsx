@@ -1,12 +1,12 @@
-// src/contexts/AuthContext.jsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../services/supabase';
 
-const AuthContext = createContext({});
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     // Verificar sessão inicial
@@ -68,30 +68,25 @@ export const AuthProvider = ({ children }) => {
     if (error) throw error;
   };
 
-  const value = {
+ const value = {
     user,
     loading,
+    profile,
     signIn,
     signUp,
     signOut,
     resetPassword,
-    updatePassword,
+    updatePassword
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Exportar APENAS UMA VEZ o hook useAuth
+// CORREÇÃO: Exportar apenas uma vez
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  
   if (!context) {
-    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+    throw new Error('useAuth deve ser usado dentro de AuthProvider');
   }
-  
   return context;
 };

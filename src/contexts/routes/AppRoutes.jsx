@@ -1,14 +1,12 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-
-// Importações de componentes de página
-import Dashboard from '../pages/Dashboard';
-import Login from '../pages/Login';
-import Register from '../pages/Register';
-import Profile from '../pages/Profile';
-import NotFound from '../pages/NotFound';
-import Layout from '../components/Layout';
-
+import { useAuth } from './contexts/AuthContext';
+import Layout from './components/layout/Layout';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import NotFound from './pages/NotFound';
+import LoadingSpinner from './components/common/LoadingSpinner';
+import Profile from './pages/Profile';
 //LAYOUT
 
 const AppRoutes = () => {
