@@ -1,29 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './contexts/AuthContext';
-import Layout from './components/layout/Layout';
-import Dashboard from './pages/Dashboard';
-import Login from './pages/Login';
-import SignUp from './pages/SignUp';
-import NotFound from './pages/NotFound';
-import LoadingSpinner from './components/common/LoadingSpinner';
-import Profile from './pages/Profile';
-//LAYOUT
-
-const AppRoutes = () => {
-  return (
-    <Routes>
-      {/* Rotas que usam o Layout */}
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Dashboard />} />
-        {/* Adicione outras rotas protegidas aqui */}
-      </Route>
-      
-      {/* Rotas sem Layout (login, register, etc.) */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-    </Routes>
-  );
-};
+import { useAuth } from '../AuthContext';
+import Dashboard from '../../components/dashboard/Dashboard';
+import Login from '../../components/auth/Login';
+import SignUp from '../../components/auth/SignUp';
+import Layout from '../../components/Layout';
 
 // Componente para rotas protegidas
 const ProtectedRoute = ({ children }) => {
@@ -63,24 +43,27 @@ const PublicRoute = ({ children, restricted = false }) => {
   // Se a rota é restrita (como login/register) e usuário já está autenticado
   // redireciona para dashboard
   if (restricted && user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
 };
 
 // Componente principal de rotas
+const AppRoutes = () => {
   return (
     <Routes>
-      {/* Rota raiz - redireciona baseado no estado de autenticação */}
       <Route
         path="/"
         element={
-          <PublicRoute>
-            <Navigate to="/dashboard" replace />
-          </PublicRoute>
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<Dashboard />} />
+        {/* TODO: Create Profile page */}
+      </Route>
 
       {/* Rotas públicas acessíveis sem autenticação */}
       <Route
@@ -95,33 +78,12 @@ const PublicRoute = ({ children, restricted = false }) => {
         path="/register"
         element={
           <PublicRoute restricted>
-            <Register />
+            <SignUp />
           </PublicRoute>
         }
       />
-
-      {/* Rotas protegidas - requerem autenticação */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Rota 404 - não encontrado */}
-      <Route path="*" element={<NotFound />} />
     </Routes>
   );
-
+}
 
 export default AppRoutes;

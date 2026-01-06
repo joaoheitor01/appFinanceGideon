@@ -1,12 +1,12 @@
-// src/components/dashboard/Dashboard.jsx
+// src/DashboardPage.jsx
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../services/supabase';
-import { useTheme } from '../../contexts/ThemeContext';
-import DashboardLayout from '../layout/DashboardLayout';
-import './Dashboard.css';
+import { useAuth } from './contexts/AuthContext';
+import { supabase } from './services/supabase';
+import { useTheme } from './contexts/ThemeContext';
+import DashboardLayout from './components/layout/DashboardLayout';
+import './components/dashboard/Dashboard.css';
 
-const Dashboard = () => {
+const DashboardPage = () => {
   const { isDark, toggleTheme } = useTheme();
   const { user, signOut, loading: authLoading } = useAuth();
   
@@ -206,7 +206,8 @@ const Dashboard = () => {
     return (
       <div className={`loading-screen ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`}>
         <div className="spinner"></div>
-      </div>    );
+      </div>
+    );
   }
 
   const totals = calculateTotals();
@@ -221,161 +222,160 @@ const Dashboard = () => {
       userPlan={userPlan}
     >
       <div className="text-center mb-8">
-  <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} mb-2`}>
-    Dashboard Financeiro
-  </h1>
-  <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-    Gerencie suas receitas e despesas com facilidade
-  </p>
-</div>
-
-{/* Cards de Resumo */}
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-  {/* Card Entradas */}
-  <div className={`rounded-xl p-6 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-    <div className="flex justify-between items-center mb-4">
-      <span className={`text-base font-semibold ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
-        ENTRADAS
-      </span>
-      <div className={`p-2 rounded-lg ${isDark ? 'bg-green-900' : 'bg-green-100'}`}>
-        <span className={`text-xl ${isDark ? 'text-green-400' : 'text-green-600'}`}>↑</span>
+        <h1 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} mb-2`}>
+          Dashboard Financeiro
+        </h1>
+        <p className={`text-lg ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+          Gerencie suas receitas e despesas com facilidade
+        </p>
       </div>
-    </div>
-    <div className={`text-3xl font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>
-      {formatCurrency(totals.income)}
-    </div>
-  </div>
 
-  {/* Card Saídas */}
-  <div className={`rounded-xl p-6 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-    <div className="flex justify-between items-center mb-4">
-      <span className={`text-base font-semibold ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
-        SAÍDAS
-      </span>
-      <div className={`p-2 rounded-lg ${isDark ? 'bg-red-900' : 'bg-red-100'}`}>
-        <span className={`text-xl ${isDark ? 'text-red-400' : 'text-red-600'}`}>↓</span>
-      </div>
-    </div>
-    <div className={`text-3xl font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-      {formatCurrency(totals.expense)}
-    </div>
-  </div>
+      {/* Cards de Resumo */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+        {/* Card Entradas */}
+        <div className={`rounded-xl p-6 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+          <div className="flex justify-between items-center mb-4">
+            <span className={`text-base font-semibold ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
+              ENTRADAS
+            </span>
+            <div className={`p-2 rounded-lg ${isDark ? 'bg-green-900' : 'bg-green-100'}`}>
+              <span className={`text-xl ${isDark ? 'text-green-400' : 'text-green-600'}`}>↑</span>
+            </div>
+          </div>
+          <div className={`text-3xl font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>
+            {formatCurrency(totals.income)}
+          </div>
+        </div>
 
-  {/* Card Saldo Total */}
-  <div className={`rounded-xl p-6 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-    <div className="flex justify-between items-center mb-4">
-      <span className={`text-base font-semibold ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
-        SALDO TOTAL
-      </span>
-      <div className={`p-2 rounded-lg ${isDark ? 'bg-blue-900' : 'bg-blue-100'}`}>
-        <span className={`text-xl ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>💰</span>
+        {/* Card Saídas */}
+        <div className={`rounded-xl p-6 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+          <div className="flex justify-between items-center mb-4">
+            <span className={`text-base font-semibold ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
+              SAÍDAS
+            </span>
+            <div className={`p-2 rounded-lg ${isDark ? 'bg-red-900' : 'bg-red-100'}`}>
+              <span className={`text-xl ${isDark ? 'text-red-400' : 'text-red-600'}`}>↓</span>
+            </div>
+          </div>
+          <div className={`text-3xl font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>
+            {formatCurrency(totals.expense)}
+          </div>
+        </div>
+
+        {/* Card Saldo Total */}
+        <div className={`rounded-xl p-6 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+          <div className="flex justify-between items-center mb-4">
+            <span className={`text-base font-semibold ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
+              SALDO TOTAL
+            </span>
+            <div className={`p-2 rounded-lg ${isDark ? 'bg-blue-900' : 'bg-blue-100'}`}>
+              <span className={`text-xl ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>💰</span>
+            </div>
+          </div>
+          <div className={`text-3xl font-bold ${totals.total >= 0 ? (isDark ? 'text-green-400' : 'text-green-600') : (isDark ? 'text-red-400' : 'text-red-600')}`}>
+            {formatCurrencyWithSign(totals.total)}
+          </div>
+        </div>
       </div>
-    </div>
-    <div className={`text-3xl font-bold ${totals.total >= 0 ? (isDark ? 'text-green-400' : 'text-green-600') : (isDark ? 'text-red-400' : 'text-red-600')}`}>
-      {formatCurrencyWithSign(totals.total)}
-    </div>
-  </div>
-</div>
 
       {/* Formulário de Nova Transação */}
-<div className={`rounded-xl p-6 mb-10 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-  <h2 className={`text-xl font-semibold mb-6 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-    Nova Transação
-  </h2>
-  
-  {/* Botões de tipo */}
-  <div className="flex gap-3 mb-6">
-    <button
-      type="button"
-      onClick={() => setType('income')}
-      className={`flex-1 p-3 rounded-lg font-semibold text-sm ${type === 'income' ? (isDark ? 'bg-green-700 text-white' : 'bg-green-600 text-white') : (isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600')}`}
-    >
-      Entrada
-    </button>
-    <button
-      type="button"
-      onClick={() => setType('expense')}
-      className={`flex-1 p-3 rounded-lg font-semibold text-sm ${type === 'expense' ? (isDark ? 'bg-red-700 text-white' : 'bg-red-600 text-white') : (isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600')}`}
-    >
-      Saída
-    </button>
-  </div>
+      <div className={`rounded-xl p-6 mb-10 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        <h2 className={`text-xl font-semibold mb-6 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+          Nova Transação
+        </h2>
+        
+        {/* Botões de tipo */}
+        <div className="flex gap-3 mb-6">
+          <button
+            type="button"
+            onClick={() => setType('income')}
+            className={`flex-1 p-3 rounded-lg font-semibold text-sm ${type === 'income' ? (isDark ? 'bg-green-700 text-white' : 'bg-green-600 text-white') : (isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600')}`}
+          >
+            Entrada
+          </button>
+          <button
+            type="button"
+            onClick={() => setType('expense')}
+            className={`flex-1 p-3 rounded-lg font-semibold text-sm ${type === 'expense' ? (isDark ? 'bg-red-700 text-white' : 'bg-red-600 text-white') : (isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-600')}`}
+          >
+            Saída
+          </button>
+        </div>
 
-  <form onSubmit={handleAddTransaction}>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
-      <div>
-        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-          Descrição *
-        </label>
-        <input
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-          className={`w-full p-3 rounded-lg border ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-800'} text-sm`}
-          placeholder="Ex: Salário, Mercado, etc."
-        />
+        <form onSubmit={handleAddTransaction}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                Descrição *
+              </label>
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+                className={`w-full p-3 rounded-lg border ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-800'} text-sm`}
+                placeholder="Ex: Salário, Mercado, etc."
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                Valor (R$) *
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                required
+                className={`w-full p-3 rounded-lg border ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-800'} text-sm`}
+                placeholder="0,00"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                Categoria
+              </label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className={`w-full p-3 rounded-lg border ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-800'} text-sm`}
+              >
+                <option value="">Selecione...</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Moradia">Moradia</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Lazer">Lazer</option>
+                <option value="Saúde">Saúde</option>
+                <option value="Educação">Educação</option>
+                <option value="Outros">Outros</option>
+              </select>
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                Data
+              </label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className={`w-full p-3 rounded-lg border ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-800'} text-sm`}
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className={`px-8 py-3 rounded-lg font-semibold text-white transition-colors ${type === 'income' ? (isDark ? 'bg-green-600 hover:bg-green-700' : 'bg-green-500 hover:bg-green-600') : (isDark ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600')}`}
+          >
+            Adicionar Transação
+          </button>
+        </form>
       </div>
 
-      <div>
-        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-          Valor (R$) *
-        </label>
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          required
-          className={`w-full p-3 rounded-lg border ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-800'} text-sm`}
-          placeholder="0,00"
-        />
-      </div>
-
-      <div>
-        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-          Categoria
-        </label>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className={`w-full p-3 rounded-lg border ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-800'} text-sm`}
-        >
-          <option value="">Selecione...</option>
-          <option value="Alimentação">Alimentação</option>
-          <option value="Moradia">Moradia</option>
-          <option value="Transporte">Transporte</option>
-          <option value="Lazer">Lazer</option>
-          <option value="Saúde">Saúde</option>
-          <option value="Educação">Educação</option>
-          <option value="Outros">Outros</option>
-        </select>
-      </div>
-
-      <div>
-        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-          Data
-        </label>
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className={`w-full p-3 rounded-lg border ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-800'} text-sm`}
-        />
-      </div>
-    </div>
-
-    <button
-      type="submit"
-      className={`px-8 py-3 rounded-lg font-semibold text-white transition-colors ${type === 'income' ? (isDark ? 'bg-green-600 hover:bg-green-700' : 'bg-green-500 hover:bg-green-600') : (isDark ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600')}`}
-    >
-      Adicionar Transação
-    </button>
-  </form>
-</div>
-
-      {/* Grid Principal - Resumo Mensal e Últimas Transações */}
       {/* Grid Principal - Resumo Mensal e Últimas Transações */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Coluna 1: Resumo Mensal */}
@@ -430,7 +430,7 @@ const Dashboard = () => {
             Clique em um mês para ver detalhes
           </p>
         </div>
-      
+
         {/* Coluna 2: Últimas Transações */}
         <div className={`rounded-xl p-6 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
           <div className="flex justify-between items-center mb-5">
@@ -501,8 +501,9 @@ const Dashboard = () => {
             </div>
           )}
         </div>
-      </div>    </DashboardLayout>
+      </div>
+    </DashboardLayout>
   );
 };
 
-export default Dashboard;
+export default DashboardPage;
