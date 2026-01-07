@@ -3,7 +3,7 @@ import { useAuth } from '../AuthContext';
 import Dashboard from '../../components/dashboard/Dashboard';
 import Login from '../../components/auth/Login';
 import SignUp from '../../components/auth/SignUp';
-import Layout from '../../components/Layout';
+import Layout from '../../components/layout/Layout';
 
 // Componente para rotas protegidas
 const ProtectedRoute = ({ children }) => {
