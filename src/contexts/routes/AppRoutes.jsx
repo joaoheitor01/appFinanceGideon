@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import Dashboard from '../../components/dashboard/Dashboard';
-import Login from '../../components/auth/Login';
+import LoginForm from '../../components/auth/LoginForm';
 import SignUp from '../../components/auth/SignUp';
 import Layout from '../../components/layout/Layout';
 
@@ -70,7 +70,7 @@ const AppRoutes = () => {
         path="/login"
         element={
           <PublicRoute restricted>
-            <Login />
+            <LoginForm />
           </PublicRoute>
         }
       />
