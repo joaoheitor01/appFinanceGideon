@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import Dashboard from '../../components/dashboard/Dashboard';
 import LoginForm from '../../components/auth/LoginForm';
-import SignUp from '../../components/auth/SignUp';
+import SignUpForm from '../../components/auth/SignUpForm';
 import Layout from '../../components/layout/Layout';
 
 // Componente para rotas protegidas
@@ -78,7 +78,7 @@ const AppRoutes = () => {
         path="/register"
         element={
           <PublicRoute restricted>
-            <SignUp />
+            <SignUpForm />
           </PublicRoute>
         }
       />
