@@ -1,9 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
-import Dashboard from '../../components/dashboard/Dashboard';
-import Login from '../../components/auth/Login';
-import SignUp from '../../components/auth/SignUp';
-import Layout from '../../components/Layout';
+import { useAuth } from './contexts/AuthContext';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import SignUp from './pages/SignUp';
+import NotFound from './pages/NotFound';
+import Layout from './components/layout/Layout';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Componente para rotas protegidas
 const ProtectedRoute = ({ children }) => {
@@ -58,7 +60,7 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Layout />
-         </ProtectedRoute>
+          </ProtectedRoute>
         }
       >
         <Route index element={<Dashboard />} />
