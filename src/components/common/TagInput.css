@@ -1,0 +1,58 @@
+/* src/components/common/TagInput.css */
+.tag-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    color: #f0f0f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: text;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.tag-input-container:focus-within {
+    outline: none;
+    border-color: #00b894;
+    box-shadow: 0 0 0 3px #00b89420;
+}
+
+.tag-chip {
+    display: flex;
+    align-items: center;
+    background-color: #00b894;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.tag-chip button {
+    background: none;
+    border: none;
+    color: white;
+    margin-left: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.tag-chip button:hover {
+    opacity: 1;
+}
+
+.tag-input-container input {
+    flex-grow: 1;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #f0f0f0;
+    padding: 4px 0;
+    min-width: 120px;
+}

@@ -1617,7 +1617,29 @@ img {
   opacity: 0.5;
   cursor: not-allowed;
 }
-/* src/index.css */
+
+/* =========================================
+   HIGH-CONTRAST MODE (for accessibility)
+   ========================================= */
+/*
+  These styles would typically be added to support operating system high-contrast modes.
+  You can use a media query like `@media (forced-colors: active)` to detect
+  when a user has high-contrast mode enabled.
+
+  Example:
+  @media (forced-colors: active) {
+    .chart-container {
+      border: 2px solid WindowText; // Use system colors
+    }
+    .chart-wrapper {
+      background-color: Window; // Use system colors
+    }
+    .text-primary, .text-secondary {
+      color: WindowText;
+    }
+    // Adjust chart library colors if possible, or provide alternative text.
+  }
+*//* src/index.css */
 .loading-screen {
   display: flex;
   flex-direction: column;

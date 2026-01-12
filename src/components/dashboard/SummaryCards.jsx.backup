@@ -1,0 +1,87 @@
+// src/components/dashboard/SummaryCards.jsx
+import React from 'react';
+import './SummaryCards.css';
+
+const SummaryCards = () => {
+  const goalPercentage = 85;
+  const circumference = 2 * Math.PI * 45; // 2 * PI * radius
+  const strokeDashoffset = circumference - (goalPercentage / 100) * circumference;
+
+  return (
+    <section className="summary-cards-grid">
+      {/* Card 1: Entradas */}
+      <div className="card">
+        <div className="card-header">
+          <div className="card-icon income">↑</div>
+          <div className="card-variation positive">+12% vs último mês</div>
+        </div>
+        <div className="card-body">
+          <h2 id="incomeDisplay" className="card-value income-value">R$ 5.448,05</h2>
+          <p className="card-label">Entradas este mês</p>
+        </div>
+      </div>
+
+      {/* Card 2: Saídas */}
+      <div className="card">
+        <div className="card-header">
+          <div className="card-icon expense">↓</div>
+          <div className="card-variation positive">-5% vs último mês</div>
+        </div>
+        <div className="card-body">
+          <h2 id="expenseDisplay" className="card-value expense-value">R$ 5.233,92</h2>
+          <p className="card-label">Saídas este mês</p>
+        </div>
+      </div>
+
+      {/* Card 3: Saldo Atual */}
+      <div className="card">
+        <div className="card-header">
+          <div className="card-icon balance">⚖️</div>
+          <div className="card-status positive-status">Positivo</div>
+        </div>
+        <div className="card-body">
+          <h2 id="currentBalance" className="card-value">R$ 214,13</h2>
+          <p className="card-label">Saldo atual</p>
+        </div>
+      </div>
+
+      {/* Card 4: Meta do Mês */}
+      <div className="card">
+        <div className="card-header">
+          <div className="card-icon goal">🎯</div>
+        </div>
+        <div className="card-body-goal">
+          <div className="progress-container">
+            <svg className="progress-ring" width="120" height="120">
+              <circle
+                className="progress-ring-track"
+                strokeWidth="10"
+                fill="transparent"
+                r="45"
+                cx="60"
+                cy="60"
+              />
+              <circle
+                id="goalProgress"
+                className="progress-ring-indicator"
+                strokeWidth="10"
+                fill="transparent"
+                r="45"
+                cx="60"
+                cy="60"
+                style={{
+                  strokeDasharray: circumference,
+                  strokeDashoffset: strokeDashoffset
+                }}
+              />
+            </svg>
+            <span className="progress-text">{goalPercentage}%</span>
+          </div>
+          <p className="card-label goal-label">Meta de economia</p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default SummaryCards;

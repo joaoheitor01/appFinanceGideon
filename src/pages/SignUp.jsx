@@ -291,29 +291,19 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className={`auth-card fade-in ${theme}`}>
-      {/* Cabeçalho com botão de tema */}
-      <div className="auth-header">
-        <div className="auth-header-top">
-          <h1>Criar Conta</h1>
-          <button 
-            onClick={toggleTheme} 
-            className="theme-toggle-btn"
-            title={isDark ? 'Alternar para modo claro' : 'Alternar para modo escuro'}
-            aria-label={isDark ? 'Alternar para modo claro' : 'Alternar para modo escuro'}
-            type="button"
-          >
-            {isDark ? '☀️' : '🌙'}
-          </button>
+    <div className="min-h-screen flex items-center justify-center bg-bg-dark-primary p-4">
+      <div className={`card w-full max-w-2xl fade-in ${theme}`}>
+        {/* Cabeçalho com botão de tema */}
+        <div className="text-center mb-8">
+            <h1 className="h2">Criar Conta</h1>
+            <p className="body text-secondary mt-2">Preencha seus dados para começar</p>
         </div>
-        <p className="auth-subtitle">Preencha seus dados para começar</p>
-      </div>
 
       {/* Formulário de Cadastro */}
-      <form onSubmit={handleSignUp} className="auth-form">
+      <form onSubmit={handleSignUp} className="space-y-6">
         {/* Nome Completo */}
-        <div className="form-group">
-          <label htmlFor="fullName" className="form-label">
+        <div className="input-group">
+          <label htmlFor="fullName" className="input-label">
             Nome Completo *
           </label>
           <input
@@ -321,7 +311,7 @@ export default function SignUpPage() {
             id="fullName"
             name="fullName"
             placeholder="Digite seu nome completo"
-            className="auth-input"
+            className="input-field"
             value={formData.fullName}
             onChange={handleInputChange}
             required
@@ -330,15 +320,15 @@ export default function SignUpPage() {
         </div>
 
         {/* Data de Nascimento */}
-        <div className="form-group">
-          <label htmlFor="birthDate" className="form-label">
+        <div className="input-group">
+          <label htmlFor="birthDate" className="input-label">
             Data de Nascimento *
           </label>
           <input
             type="date"
             id="birthDate"
             name="birthDate"
-            className="auth-input"
+            className="input-field"
             value={formData.birthDate}
             onChange={handleInputChange}
             min={dateLimits.max}
@@ -346,47 +336,51 @@ export default function SignUpPage() {
             required
             disabled={loading}
           />
-          <small className="form-hint">
+          <small className="text-xs text-text-secondary mt-1">
             Você deve ter pelo menos 18 anos
           </small>
         </div>
 
         {/* Tipo de Conta */}
-        <div className="form-group">
-          <label className="form-label">
+        <div className="input-group">
+          <label className="input-label">
             Tipo de Conta *
           </label>
-          <div className="account-type-selector">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
               type="button"
-              className={`account-type-btn ${formData.accountType === 'personal' ? 'active' : ''}`}
+              className={`btn btn-outline text-left ${formData.accountType === 'personal' ? 'bg-bg-hover' : ''}`}
               onClick={() => setFormData(prev => ({ ...prev, accountType: 'personal' }))}
               disabled={loading}
             >
-              <div className="account-icon">👤</div>
-              <div className="account-info">
-                <span className="account-title">Pessoal</span>
-                <span className="account-desc">Para uso individual</span>
+              <div className="flex items-center gap-4">
+                <div className="text-2xl">👤</div>
+                <div>
+                  <span className="font-semibold">Pessoal</span>
+                  <span className="text-xs block text-text-secondary">Para uso individual</span>
+                </div>
               </div>
             </button>
             <button
               type="button"
-              className={`account-type-btn ${formData.accountType === 'business' ? 'active' : ''}`}
+              className={`btn btn-outline text-left ${formData.accountType === 'business' ? 'bg-bg-hover' : ''}`}
               onClick={() => setFormData(prev => ({ ...prev, accountType: 'business' }))}
               disabled={loading}
             >
-              <div className="account-icon">🏢</div>
-              <div className="account-info">
-                <span className="account-title">Empresarial</span>
-                <span className="account-desc">Para empresas</span>
+              <div className="flex items-center gap-4">
+                <div className="text-2xl">🏢</div>
+                <div>
+                  <span className="font-semibold">Empresarial</span>
+                  <span className="text-xs block text-text-secondary">Para empresas</span>
+                </div>
               </div>
             </button>
           </div>
         </div>
 
         {/* Email */}
-        <div className="form-group">
-          <label htmlFor="email" className="form-label">
+        <div className="input-group">
+          <label htmlFor="email" className="input-label">
             Email *
           </label>
           <input
@@ -394,7 +388,7 @@ export default function SignUpPage() {
             id="email"
             name="email"
             placeholder="seu@email.com"
-            className="auth-input"
+            className="input-field"
             value={formData.email}
             onChange={handleInputChange}
             required
@@ -403,17 +397,17 @@ export default function SignUpPage() {
         </div>
 
         {/* Senha */}
-        <div className="form-group">
-          <label htmlFor="password" className="form-label">
+        <div className="input-group">
+          <label htmlFor="password" className="input-label">
             Senha *
           </label>
-          <div className="password-input-container">
+          <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               placeholder="Crie uma senha segura"
-              className="auth-input password-input"
+              className="input-field pr-10"
               value={formData.password}
               onChange={handleInputChange}
               required
@@ -421,7 +415,7 @@ export default function SignUpPage() {
             />
             <button
               type="button"
-              className="password-toggle-btn"
+              className="absolute inset-y-0 right-0 px-3 flex items-center text-text-secondary"
               onClick={() => setShowPassword(!showPassword)}
               disabled={loading}
               title={showPassword ? "Ocultar senha" : "Mostrar senha"}
@@ -433,23 +427,23 @@ export default function SignUpPage() {
           {/* Barra de força da senha */}
           {renderPasswordStrength()}
           
-          <small className="form-hint">
+          <small className="text-xs text-text-secondary mt-1">
             Mínimo 6 caracteres. Recomendamos usar letras maiúsculas, minúsculas e números.
           </small>
         </div>
 
         {/* Confirmar Senha */}
-        <div className="form-group">
-          <label htmlFor="confirmPassword" className="form-label">
+        <div className="input-group">
+          <label htmlFor="confirmPassword" className="input-label">
             Confirmar Senha *
           </label>
-          <div className="password-input-container">
+          <div className="relative">
             <input
               type={showConfirmPassword ? "text" : "password"}
               id="confirmPassword"
               name="confirmPassword"
               placeholder="Digite a senha novamente"
-              className="auth-input password-input"
+              className="input-field pr-10"
               value={formData.confirmPassword}
               onChange={handleInputChange}
               required
@@ -457,7 +451,7 @@ export default function SignUpPage() {
             />
             <button
               type="button"
-              className="password-toggle-btn"
+              className="absolute inset-y-0 right-0 px-3 flex items-center text-text-secondary"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               disabled={loading}
               title={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
@@ -469,7 +463,7 @@ export default function SignUpPage() {
           {/* Indicador de correspondência de senha */}
           {formData.confirmPassword && (
             <small 
-              className={`password-match ${formData.password === formData.confirmPassword ? 'match' : 'no-match'}`}
+              className={`text-xs mt-1 ${formData.password === formData.confirmPassword ? 'text-primary-color' : 'text-danger-color'}`}
             >
               {formData.password === formData.confirmPassword 
                 ? "✅ Senhas coincidem" 
@@ -480,22 +474,23 @@ export default function SignUpPage() {
         </div>
 
         {/* Termos e Condições */}
-        <div className="form-group terms-group">
-          <label className="terms-label">
+        <div className="input-group">
+          <label className="flex items-center space-x-2">
             <input
               type="checkbox"
+              className="h-4 w-4 rounded border-gray-300 text-secondary-color focus:ring-secondary-color"
               checked={acceptedTerms}
               onChange={(e) => setAcceptedTerms(e.target.checked)}
               disabled={loading}
               required
             />
-            <span className="terms-text">
+            <span className="text-sm text-text-secondary">
               Eu concordo com os{" "}
-              <a href="/terms" target="_blank" rel="noopener noreferrer" className="terms-link">
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="font-semibold text-secondary-color hover:underline">
                 Termos de Serviço
               </a>{" "}
               e{" "}
-              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="terms-link">
+              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="font-semibold text-secondary-color hover:underline">
                 Política de Privacidade
               </a>{" "}*
             </span>
@@ -504,27 +499,24 @@ export default function SignUpPage() {
 
         {/* Mensagens de Erro/Sucesso */}
         {error && (
-          <div className="message error-message">
-            <div className="message-icon">⚠️</div>
-            <div className="message-content">{error}</div>
-          </div>
+            <div className="bg-danger-color bg-opacity-20 border border-danger-color text-danger-color px-4 py-3 rounded-md relative" role="alert">
+              <strong className="font-bold">Erro: </strong>
+              <span className="block sm:inline">{error}</span>
+            </div>
         )}
 
         {success && (
-          <div className="message success-message">
-            <div className="message-icon">✅</div>
-            <div className="message-content">
+          <div className="bg-primary-color bg-opacity-20 border border-primary-color text-primary-color px-4 py-3 rounded-md" role="alert">
               {success.split('\n').map((line, index) => (
                 <p key={index}>{line}</p>
               ))}
-            </div>
           </div>
         )}
 
         {/* Botão de Cadastro */}
         <button
           type="submit"
-          className="auth-button submit-btn"
+          className="btn btn-primary w-full"
           disabled={loading}
         >
           {loading ? (
@@ -539,12 +531,12 @@ export default function SignUpPage() {
       </form>
 
       {/* Link para Login */}
-      <div className="auth-footer">
-        <span className="text-muted">Já tem uma conta? </span>
-        <Link to="/login" className="auth-link">
+      <div className="text-center mt-6">
+        <span className="text-secondary">Já tem uma conta? </span>
+        <Link to="/login" className="font-semibold text-secondary-color hover:underline">
           Fazer login
         </Link>
       </div>
     </div>
+    </div>
   );
-}

@@ -1,0 +1,78 @@
+// src/components/dashboard/SummaryCards.jsx
+import React from 'react';
+import { ArrowUpIcon, ArrowDownIcon, BanknotesIcon } from '@heroicons/react/24/outline';
+
+const formatCurrency = (value) => {
+  if (typeof value !== 'number') {
+    value = 0;
+  }
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
+};
+
+const SummaryCards = ({ income, expense, total }) => {
+  return (
+    <section aria-label="Resumo financeiro" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      {/* Entradas */}
+      <article aria-label="Entradas" className="card" role="region">
+        <header className="flex items-start justify-between">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-lg bg-primary-color/10 text-primary-color">
+              <ArrowUpIcon className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-text-secondary">Entradas este mês</h3>
+              <p className="text-xs text-primary-color">+12% vs último mês</p>
+            </div>
+          </div>
+        </header>
+
+        <main className="mt-4">
+          <p id="incomeDisplay" className="text-3xl font-bold text-text-primary">{formatCurrency(income)}</p>
+        </main>
+      </article>
+
+      {/* Saídas */}
+      <article aria-label="Saídas" className="card" role="region">
+        <header className="flex items-start justify-between">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-lg bg-danger-color/10 text-danger-color">
+              <ArrowDownIcon className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-text-secondary">Saídas este mês</h3>
+              <p className="text-xs text-danger-color">-5% vs último mês</p>
+            </div>
+          </div>
+        </header>
+
+        <main className="mt-4">
+          <p id="expenseDisplay" className="text-3xl font-bold text-text-primary">{formatCurrency(expense)}</p>
+        </main>
+      </article>
+
+      {/* Saldo */}
+      <article aria-label="Saldo atual" className="card" role="region">
+        <header className="flex items-start justify-between">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-lg bg-secondary-color/10 text-secondary-color">
+              <BanknotesIcon className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-text-secondary">Saldo atual</h3>
+              <p className="text-xs text-text-secondary">Status positivo</p>
+            </div>
+          </div>
+        </header>
+
+        <main className="mt-4">
+          <p id="currentBalance" className="text-3xl font-bold text-text-primary">{formatCurrency(total)}</p>
+        </main>
+      </article>
+    </section>
+  );
+};
+
+export default SummaryCards;

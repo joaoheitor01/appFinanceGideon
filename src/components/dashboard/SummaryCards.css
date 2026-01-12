@@ -1,0 +1,148 @@
+/* src/components/dashboard/SummaryCards.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  font-family: 'Inter', sans-serif;
+  padding-bottom: 2rem;
+}
+
+.card {
+  background-color: #171717;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #2a2a2a;
+}
+
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.card-icon.income { background-color: rgba(34, 197, 94, 0.1); color: #22c55e; }
+.card-icon.expense { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.card-icon.balance { background-color: rgba(59, 130, 246, 0.1); }
+.card-icon.goal { background-color: rgba(249, 115, 22, 0.1); }
+
+.card-variation {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.card-variation.positive {
+  color: #22c55e;
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+.card-status {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.positive-status {
+  color: #22c55e;
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+.card-body {
+  text-align: left;
+}
+
+.card-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: #f0f0f0;
+}
+
+.card-value.income-value { color: #22c55e; }
+.card-value.expense-value { color: #ef4444; }
+
+.card-label {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  margin: 0;
+}
+
+/* Goal Card Specifics */
+.card-body-goal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.progress-container {
+    position: relative;
+    width: 120px;
+    height: 100px; /* Adjusted height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring {
+    transform: rotate(-90deg); /* Start from top */
+}
+
+.progress-ring-track {
+    stroke: #333;
+}
+
+.progress-ring-indicator {
+    stroke: #00b894;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s ease-out;
+}
+
+.progress-text {
+    position: absolute;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #f0f0f0;
+}
+
+.goal-label {
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+
+/* Responsive Layout */
+@media (max-width: 1024px) {
+  .summary-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .summary-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

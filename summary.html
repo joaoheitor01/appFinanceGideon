@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gideon Finance - Resumo</title>
+    <link rel="stylesheet" href="summary.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="dashboard-grid">
+        <div class="summary-container">
+            <h2>Resumo Mensal</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mês</th>
+                            <th class="text-right">Entradas</th>
+                            <th class="text-right">Saídas</th>
+                            <th class="text-right">Saldo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthly-summary-body">
+                        <!-- Rows will be inserted by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>Distribuição por Categoria</h2>
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+
+    <script src="summary.js"></script>
+</body>
+</html>

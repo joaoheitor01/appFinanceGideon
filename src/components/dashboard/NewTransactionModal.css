@@ -1,0 +1,39 @@
+/* src/components/dashboard/NewTransactionModal.css */
+.error-message {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.form-group input.error,
+.form-group select.error {
+    border-color: #ef4444;
+}
+
+.toggle-switch {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #444;
+  width: fit-content;
+}
+
+.toggle-btn {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: transparent;
+  color: #a0a0a0;
+  border: none;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 0.95rem;
+}
+
+.toggle-btn.active {
+  background-color: #00b894;
+  color: white;
+  font-weight: 600;
+}
+
+.toggle-btn:not(.active):hover {
+  background-color: #2a2a2a;
+}

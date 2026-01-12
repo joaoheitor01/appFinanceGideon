@@ -6,6 +6,8 @@ import { useTheme } from '../../contexts/ThemeContext';
 import DashboardLayout from '../layout/DashboardLayout';
 import './Dashboard.css';
 
+import SummaryCards from './SummaryCards';
+
 const Dashboard = () => {
   const { isDark, toggleTheme } = useTheme();
   const { user, signOut, loading: authLoading } = useAuth();
@@ -230,52 +232,7 @@ const Dashboard = () => {
 </div>
 
 {/* Cards de Resumo */}
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-  {/* Card Entradas */}
-  <div className={`rounded-xl p-6 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-    <div className="flex justify-between items-center mb-4">
-      <span className={`text-base font-semibold ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
-        ENTRADAS
-      </span>
-      <div className={`p-2 rounded-lg ${isDark ? 'bg-green-900' : 'bg-green-100'}`}>
-        <span className={`text-xl ${isDark ? 'text-green-400' : 'text-green-600'}`}>↑</span>
-      </div>
-    </div>
-    <div className={`text-3xl font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>
-      {formatCurrency(totals.income)}
-    </div>
-  </div>
-
-  {/* Card Saídas */}
-  <div className={`rounded-xl p-6 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-    <div className="flex justify-between items-center mb-4">
-      <span className={`text-base font-semibold ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
-        SAÍDAS
-      </span>
-      <div className={`p-2 rounded-lg ${isDark ? 'bg-red-900' : 'bg-red-100'}`}>
-        <span className={`text-xl ${isDark ? 'text-red-400' : 'text-red-600'}`}>↓</span>
-      </div>
-    </div>
-    <div className={`text-3xl font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>
-      {formatCurrency(totals.expense)}
-    </div>
-  </div>
-
-  {/* Card Saldo Total */}
-  <div className={`rounded-xl p-6 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-    <div className="flex justify-between items-center mb-4">
-      <span className={`text-base font-semibold ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
-        SALDO TOTAL
-      </span>
-      <div className={`p-2 rounded-lg ${isDark ? 'bg-blue-900' : 'bg-blue-100'}`}>
-        <span className={`text-xl ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>💰</span>
-      </div>
-    </div>
-    <div className={`text-3xl font-bold ${totals.total >= 0 ? (isDark ? 'text-green-400' : 'text-green-600') : (isDark ? 'text-red-400' : 'text-red-600')}`}>
-      {formatCurrencyWithSign(totals.total)}
-    </div>
-  </div>
-</div>
+<SummaryCards income={totals.income} expense={totals.expense} total={totals.total} />
 
       {/* Formulário de Nova Transação */}
 <div className={`rounded-xl p-6 mb-10 shadow-md border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
@@ -505,4 +462,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard;export default Dashboard;

@@ -1,0 +1,307 @@
+/* =================================== */
+/* GIDEON FINANCE - DESIGN SYSTEM      */
+/* =================================== */
+
+/* === 1. CORES === */
+:root {
+  /* Cores Primárias e de Destaque */
+  --primary-color: #22c55e; /* Verde para ações principais, sucesso */
+  --secondary-color: #3b82f6; /* Azul para elementos secundários, links, estados ativos */
+  --danger-color: #ef4444; /* Vermelho para alertas, erros, exclusão */
+  --warning-color: #f97316; /* Laranja para avisos */
+  --purple-accent: #8b5cf6; /* Roxo para categorias ou destaques especiais */
+
+  /* Cores de Fundo */
+  --bg-dark-primary: #0a0a0a; /* Fundo principal da aplicação */
+  --bg-dark-secondary: #121212; /* Fundo de containers como a sidebar */
+  --bg-card: #171717; /* Fundo de cards e elementos elevados */
+  --bg-hover: #262626; /* Cor de fundo para hover em listas e menus */
+
+  /* Cores de Texto */
+  --text-primary: #f5f5f5; /* Para títulos e texto principal */
+  --text-secondary: #a3a3a3; /* Para legendas, placeholders e texto de apoio */
+  --text-disabled: #525252; /* Para texto em elementos desabilitados */
+
+  /* Cores de Bordas e Divisórias */
+  --border-color: #262626; /* Cor padrão para bordas */
+  --border-focus-color: var(--secondary-color); /* Cor da borda em foco */
+
+  /* Sombras */
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px 0 var(--shadow-color);
+  --shadow-md: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color);
+  --shadow-lg: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -4px var(--shadow-color);
+}
+
+/* === 2. TIPOGRAFIA === */
+:root {
+  --font-family-main: 'Inter', sans-serif;
+
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-base: 1.5;
+}
+
+/* Estilos de Base para Tipografia */
+body {
+  font-family: var(--font-family-main);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background-color: var(--bg-dark-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, .h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+}
+
+h2, .h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+h3, .h3 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+p, .body {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-base);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+/* === 3. COMPONENTES === */
+
+/* --- Botões --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Botão Primário (Verde) */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background-color: #16a34a; /* Tom mais escuro de verde */
+}
+
+/* Botão Secundário (Azul) */
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: #ffffff;
+}
+.btn-secondary:hover {
+  background-color: #2563eb; /* Tom mais escuro de azul */
+}
+
+/* Botão de Perigo (Vermelho) */
+.btn-danger {
+  background-color: var(--danger-color);
+  color: #ffffff;
+}
+.btn-danger:hover {
+  background-color: #dc2626; /* Tom mais escuro de vermelho */
+}
+
+
+/* Botão Outline */
+.btn-outline {
+  background-color: transparent;
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+.btn-outline:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--text-secondary);
+}
+.btn-outline.btn-primary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+.btn-outline.btn-primary:hover {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+.btn-outline.btn-secondary {
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+}
+.btn-outline.btn-secondary:hover {
+    background-color: var(--secondary-color);
+    color: #ffffff;
+}
+
+
+/* --- Inputs --- */
+.input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  transition: border-color 0.2s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--border-focus-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3); /* Sombra de foco azul */
+}
+
+.input-field::placeholder {
+  color: var(--text-secondary);
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+.input-icon.left {
+  left: 1rem;
+}
+.input-field-with-icon.left {
+    padding-left: 3rem;
+}
+
+.input-icon.right {
+  right: 1rem;
+}
+.input-field-with-icon.right {
+    padding-right: 3rem;
+}
+
+
+/* --- Cards --- */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.card-header {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.card-body {
+  font-size: var(--font-size-base);
+}
+
+.card-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* --- Tabelas --- */
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th, .table td {
+  padding: 1rem 1.25rem;
+  font-size: var(--font-size-sm);
+}
+
+.table thead {
+  background-color: var(--bg-card);
+}
+
+.table th {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Tabela Zebrada */
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(23, 23, 23, 0.5); /* #171717 com 50% de opacidade */
+}
+
+/* Efeito Hover */
+.table-hover tbody tr:hover {
+  background-color: var(--bg-hover);
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}

@@ -1,0 +1,76 @@
+/* src/components/dashboard/TransactionListView.css */
+
+.transaction-list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* 12px */
+}
+
+.list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1c1c1c;
+    padding: 1rem; /* 16px */
+    border-radius: 8px;
+    border: 1px solid #2a2a2a;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.list-item:hover {
+    background-color: #252525;
+}
+
+.list-item.selected {
+    background-color: #00b89420;
+    border-color: #00b894;
+}
+
+.list-item-main {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* 16px */
+}
+
+.list-item-checkbox {
+    /* Larger and easier to click */
+    width: 1.25rem; /* 20px */
+    height: 1.25rem; /* 20px */
+}
+
+.list-item-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.list-item-description {
+    font-weight: 600;
+    color: #f0f0f0;
+}
+
+.list-item-category {
+    font-size: 0.85rem;
+    color: #a0a0a0;
+}
+
+.list-item-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* 24px */
+}
+
+.list-item-amount {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.list-item-actions {
+    display: flex;
+    gap: 0.5rem; /* 8px */
+}
+
+.no-transactions-message {
+    color: #a0a0a0;
+    text-align: center;
+    padding: 2rem;
+}
